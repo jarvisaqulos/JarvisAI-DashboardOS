@@ -15,6 +15,8 @@ class JarvisDashboard {
         this.workLog = [];
         this.emails = [];
         this.lastEmailCheck = null;
+        this.events = [];
+        this.lastCalendarCheck = null;
         
         this.init();
     }
@@ -24,6 +26,7 @@ class JarvisDashboard {
         this.setupEventListeners();
         this.startClock();
         this.startEmailHeartbeat(); // Start email checking
+        this.startCalendarHeartbeat(); // Start calendar checking
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         
@@ -47,6 +50,103 @@ class JarvisDashboard {
         setInterval(() => {
             this.updateEmailStatus();
         }, 60000);
+    }
+
+    // Calendar Heartbeat - Check every hour
+    startCalendarHeartbeat() {
+        // Check immediately on load
+        this.checkCalendar();
+        
+        // Then every hour (3600000 ms)
+        setInterval(() => {
+            this.checkCalendar();
+        }, 3600000);
+        
+        // Update UI every minute
+        setInterval(() => {
+            this.updateCalendarStatus();
+        }, 60000);
+    }
+
+    async checkCalendar() {
+        this.addLogEntry('Checking calendar...', 'system');
+        
+        // In production, this would call the gog calendar API
+        // For now, simulate with sample data or empty
+        this.events = []; // Empty for now - will populate from API
+        this.lastCalendarCheck = new Date();
+        
+        // Check for upcoming meetings in next 2 hours
+        const upcoming = this.getUpcomingEvents(2);
+        if (upcoming.length > 0) {
+            this.addLogEntry(`${upcoming.length} upcoming meeting(s)`, 'calendar');
+        }
+        
+        this.renderCalendar();
+        this.saveData();
+    }
+
+    getUpcomingEvents(hoursAhead) {
+        const now = new Date();
+        const future = new Date(now.getTime() + hoursAhead * 60 * 60 * 1000);
+        return this.events.filter(e => {
+            const eventTime = new Date(e.start);
+            return eventTime > now && eventTime < future;
+        });
+    }
+
+    updateCalendarStatus() {
+        const statusEl = document.getElementById('calendarCheckStatus');
+        if (statusEl && this.lastCalendarCheck) {
+            const mins = Math.floor((new Date() - this.lastCalendarCheck) / 60000);
+            statusEl.textContent = `Last check: ${mins}m ago`;
+        }
+        
+        // Show next meeting
+        const nextMeetingEl = document.getElementById('nextMeeting');
+        if (nextMeetingEl) {
+            const upcoming = this.getUpcomingEvents(24);
+            if (upcoming.length > 0) {
+                const next = upcoming[0];
+                nextMeetingEl.textContent = next.title;
+                document.getElementById('nextMeetingTime').textContent = this.formatTime(next.start);
+            } else {
+                nextMeetingEl.textContent = 'No upcoming meetings';
+                document.getElementById('nextMeetingTime').textContent = '—';
+            }
+        }
+    }
+
+    renderCalendar() {
+        const container = document.getElementById('calendarList');
+        if (!container) return;
+        
+        if (this.events.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div>📅 Calendar connected</div>
+                    <div style="font-size: 12px; margin-top: 8px; color: var(--text-tertiary);">No upcoming events</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // Sort by date
+        const sorted = [...this.events].sort((a, b) => new Date(a.start) - new Date(b.start));
+        
+        container.innerHTML = sorted.slice(0, 5).map(event => `
+            <div class="calendar-item">
+                <div class="calendar-date">
+                    <span class="day">${new Date(event.start).getDate()}</span>
+                    <span class="month">${new Date(event.start).toLocaleDateString('en-US', { month: 'short' })}</span>
+                </div>
+                <div class="calendar-info">
+                    <div class="calendar-title">${event.title}</div>
+                    <div class="calendar-time">${this.formatTime(event.start)} - ${this.formatTime(event.end)}</div>
+                    ${event.location ? `<div class="calendar-location">📍 ${event.location}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
     }
 
     async checkEmail() {
@@ -144,6 +244,8 @@ class JarvisDashboard {
             this.workLog = data.workLog || [];
             this.emails = data.emails || [];
             this.lastEmailCheck = data.lastEmailCheck ? new Date(data.lastEmailCheck) : null;
+            this.events = data.events || [];
+            this.lastCalendarCheck = data.lastCalendarCheck ? new Date(data.lastCalendarCheck) : null;
         }
         
         // Load initial projects if none exist
@@ -159,7 +261,9 @@ class JarvisDashboard {
             resources: this.resources,
             workLog: this.workLog,
             emails: this.emails,
-            lastEmailCheck: this.lastEmailCheck
+            lastEmailCheck: this.lastEmailCheck,
+            events: this.events,
+            lastCalendarCheck: this.lastCalendarCheck
         };
         localStorage.setItem('jarvisDashboard', JSON.stringify(data));
     }
@@ -459,9 +563,11 @@ class JarvisDashboard {
         this.renderResources();
         this.renderWorkLog();
         this.renderEmails();
+        this.renderCalendar();
         this.renderStats();
         this.updateStatusUI();
         this.updateEmailStatus();
+        this.updateCalendarStatus();
     }
 
     renderTasks() {

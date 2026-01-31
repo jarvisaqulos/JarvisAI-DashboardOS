@@ -115,9 +115,9 @@
                                 <div class="status-sublabel" id="lastActionTime">Just now</div>
                             </div>
                             <div class="status-card">
-                                <div class="status-label">Next Update</div>
-                                <div class="status-value" id="nextUpdate">--</div>
-                                <div class="status-sublabel">On demand</div>
+                                <div class="status-label">Next Meeting</div>
+                                <div class="status-value" id="nextMeeting">--</div>
+                                <div class="status-sublabel" id="nextMeetingTime">No meetings scheduled</div>
                             </div>
                         </div>
                     </div>
@@ -461,11 +461,11 @@
                     <div class="panel">
                         <div class="panel-header">
                             <h2>📅 Calendar</h2>
-                            <span class="connection-status">⚡ Connected</span>
+                            <span class="calendar-check-status" id="calendarCheckStatus">Checking...</span>
                         </div>
                         <div class="panel-content">
                             <div id="calendarList" class="calendar-list">
-                                <div class="empty-state">No upcoming events</div>
+                                <div class="empty-state">Checking calendar...</div>
                             </div>
                         </div>
                     </div>
