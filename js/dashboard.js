@@ -13,6 +13,8 @@ class JarvisDashboard {
         this.projects = [];
         this.resources = [];
         this.workLog = [];
+        this.emails = [];
+        this.lastEmailCheck = null;
         
         this.init();
     }
@@ -21,6 +23,7 @@ class JarvisDashboard {
         this.loadData();
         this.setupEventListeners();
         this.startClock();
+        this.startEmailHeartbeat(); // Start email checking
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         
@@ -28,6 +31,106 @@ class JarvisDashboard {
         this.setStatus('idle');
         
         console.log('🤖 Jarvis Aqulos Dashboard initialized');
+    }
+
+    // Email Heartbeat - Check every 30 minutes
+    startEmailHeartbeat() {
+        // Check immediately on load
+        this.checkEmail();
+        
+        // Then every 30 minutes (1800000 ms)
+        setInterval(() => {
+            this.checkEmail();
+        }, 1800000);
+        
+        // Also update the UI every minute to show time since last check
+        setInterval(() => {
+            this.updateEmailStatus();
+        }, 60000);
+    }
+
+    async checkEmail() {
+        this.addLogEntry('Checking email...', 'system');
+        
+        // In a real implementation, this would call an API endpoint
+        // that runs: GOG_KEYRING_PASSWORD=openclaw gog gmail messages search "in:inbox is:unread" --max 20
+        
+        // For now, simulate with sample data or load from localStorage
+        const mockEmails = [
+            {
+                id: '19c150fe7d16b9ac',
+                from: 'GitHub',
+                subject: '[GitHub] A new SSH authentication public key was added',
+                time: new Date().toISOString(),
+                unread: true,
+                category: 'updates',
+                priority: 'medium'
+            },
+            {
+                id: '19c1313767452207',
+                from: 'OpenRouter Team',
+                subject: 'Uptime optimization at no extra cost',
+                time: new Date(Date.now() - 3600000).toISOString(),
+                unread: true,
+                category: 'promotions',
+                priority: 'low'
+            }
+        ];
+        
+        this.emails = mockEmails;
+        this.lastEmailCheck = new Date();
+        
+        const unreadCount = this.emails.filter(e => e.unread).length;
+        if (unreadCount > 0) {
+            this.addLogEntry(`${unreadCount} unread email(s) found`, 'email');
+            // Could trigger notification here
+        }
+        
+        this.renderEmails();
+        this.saveData();
+    }
+
+    updateEmailStatus() {
+        const statusEl = document.getElementById('emailCheckStatus');
+        if (statusEl && this.lastEmailCheck) {
+            const mins = Math.floor((new Date() - this.lastEmailCheck) / 60000);
+            statusEl.textContent = `Last check: ${mins}m ago`;
+        }
+    }
+
+    renderEmails() {
+        const container = document.getElementById('emailList');
+        if (!container) return;
+        
+        const unread = this.emails.filter(e => e.unread);
+        
+        if (this.emails.length === 0) {
+            container.innerHTML = '<div class="empty-state">No unread emails</div>';
+            return;
+        }
+        
+        container.innerHTML = this.emails.map(email => `
+            <div class="email-item ${email.unread ? 'unread' : ''}" data-id="${email.id}">
+                <div class="email-sender">${email.from}</div>
+                <div class="email-subject">${email.subject}</div>
+                <div class="email-meta">
+                    <span class="email-time">${this.formatTime(email.time)}</span>
+                    ${email.unread ? '<span class="unread-badge">NEW</span>' : ''}
+                </div>
+            </div>
+        `).join('');
+        
+        // Update badges
+        const badge = document.getElementById('emailBadge');
+        const navBadge = document.getElementById('navEmailBadge');
+        if (badge) {
+            badge.textContent = unread.length;
+            badge.style.display = unread.length > 0 ? 'inline-block' : 'none';
+        }
+        if (navBadge) {
+            navBadge.textContent = unread.length;
+            navBadge.style.display = unread.length > 0 ? 'inline-block' : 'none';
+        }
     }
 
     // Data Management
@@ -39,6 +142,8 @@ class JarvisDashboard {
             this.projects = data.projects || [];
             this.resources = data.resources || [];
             this.workLog = data.workLog || [];
+            this.emails = data.emails || [];
+            this.lastEmailCheck = data.lastEmailCheck ? new Date(data.lastEmailCheck) : null;
         }
         
         // Load initial projects if none exist
@@ -52,7 +157,9 @@ class JarvisDashboard {
             tasks: this.tasks,
             projects: this.projects,
             resources: this.resources,
-            workLog: this.workLog
+            workLog: this.workLog,
+            emails: this.emails,
+            lastEmailCheck: this.lastEmailCheck
         };
         localStorage.setItem('jarvisDashboard', JSON.stringify(data));
     }
@@ -348,8 +455,10 @@ class JarvisDashboard {
         this.renderProjects();
         this.renderResources();
         this.renderWorkLog();
+        this.renderEmails();
         this.renderStats();
         this.updateStatusUI();
+        this.updateEmailStatus();
     }
 
     renderTasks() {
@@ -516,6 +625,17 @@ class JarvisDashboard {
     // Utility
     formatDate(dateStr) {
         const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    formatTime(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 

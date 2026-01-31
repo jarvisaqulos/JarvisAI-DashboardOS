@@ -52,6 +52,7 @@
                 <button class="nav-item" data-section="communications">
                     <span class="nav-icon">✉</span>
                     <span>Communications</span>
+                    <span class="badge" id="navEmailBadge" style="display: none;">0</span>
                 </button>
                 <button class="nav-item" data-section="resources">
                     <span class="nav-icon">◐</span>
@@ -441,8 +442,8 @@
                 <div class="comm-grid">
                     <div class="panel">
                         <div class="panel-header">
-                            <h2>📧 Email Tracking</h2>
-                            <span class="connection-status">⚡ Connected</span>
+                            <h2>📧 Email Tracking <span id="emailBadge" class="badge" style="display: none;">0</span></h2>
+                            <span class="email-check-status" id="emailCheckStatus">Checking...</span>
                         </div>
                         <div class="panel-content">
                             <div class="email-filters">

@@ -1191,6 +1191,69 @@ body {
     background: var(--bg-hover);
 }
 
+/* Email Styles */
+.email-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.email-item:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+}
+
+.email-item.unread {
+    border-left: 3px solid var(--accent-green);
+}
+
+.email-sender {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.email-subject {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.email-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.email-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.unread-badge {
+    padding: 2px 8px;
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 10px;
+}
+
+.email-check-status {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-left: auto;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
