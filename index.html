@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Aqulos — Operating System</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="dark-mode">
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <div class="logo">
+                <span class="logo-icon">◉</span>
+                <span class="logo-text">JARVIS AQULOS</span>
+            </div>
+            <div class="system-status" id="systemStatus">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span class="status-text" id="statusText">INITIALIZING...</span>
+            </div>
+        </div>
+        <div class="status-right">
+            <div class="timestamp" id="timestamp">--:--:--</div>
+            <div class="version">v2.0.0</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <button class="nav-item active" data-section="overview">
+                    <span class="nav-icon">◉</span>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-section="tasks">
+                    <span class="nav-icon">◫</span>
+                    <span>Tasks</span>
+                    <span class="badge" id="taskBadge">0</span>
+                </button>
+                <button class="nav-item" data-section="projects">
+                    <span class="nav-icon">◧</span>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-item" data-section="goals">
+                    <span class="nav-icon">◆</span>
+                    <span>Goals & KPIs</span>
+                </button>
+                <button class="nav-item" data-section="communications">
+                    <span class="nav-icon">✉</span>
+                    <span>Communications</span>
+                </button>
+                <button class="nav-item" data-section="resources">
+                    <span class="nav-icon">◐</span>
+                    <span>Resource Vault</span>
+                </button>
+                <button class="nav-item" data-section="logs">
+                    <span class="nav-icon">◫</span>
+                    <span>Work Log</span>
+                </button>
+            </nav>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <button class="action-btn" onclick="dashboard.addTask()">
+                    <span>+</span> New Task
+                </button>
+                <button class="action-btn" onclick="dashboard.setStatus('active')">
+                    <span class="dot green"></span> Set Active
+                </button>
+                <button class="action-btn" onclick="dashboard.setStatus('planning')">
+                    <span class="dot blue"></span> Set Planning
+                </button>
+                <button class="action-btn" onclick="dashboard.setStatus('blocked')">
+                    <span class="dot red"></span> Set Blocked
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Overview Section -->
+            <section id="overview" class="section active">
+                <div class="section-header">
+                    <h1>System Overview</h1>
+                    <p class="subtitle">Real-time operating status</p>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="panel status-panel">
+                    <div class="panel-header">
+                        <h2>🔔 System Status</h2>
+                        <span class="live-indicator">LIVE</span>
+                    </div>
+                    <div class="panel-content">
+                        <div class="status-grid">
+                            <div class="status-card" id="currentStateCard">
+                                <div class="status-label">Current State</div>
+                                <div class="status-value" id="currentState">IDLE</div>
+                                <div class="status-sublabel">Ready for work</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Active Task</div>
+                                <div class="status-value" id="activeTask">None</div>
+                                <div class="status-sublabel" id="taskProgress">--</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Last Action</div>
+                                <div class="status-value" id="lastAction">System init</div>
+                                <div class="status-sublabel" id="lastActionTime">Just now</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Next Update</div>
+                                <div class="status-value" id="nextUpdate">--</div>
+                                <div class="status-sublabel">On demand</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Active Tasks Summary -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🧩 Active Tasks</h2>
+                            <button class="btn-small" onclick="dashboard.switchSection('tasks')">View All</button>
+                        </div>
+                        <div class="panel-content">
+                            <div id="activeTasksList" class="task-list">
+                                <div class="empty-state">No active tasks</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Summary -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📂 Recent Projects</h2>
+                            <button class="btn-small" onclick="dashboard.switchSection('projects')">View All</button>
+                        </div>
+                        <div class="panel-content">
+                            <div id="recentProjectsList" class="project-list">
+                                <div class="empty-state">No projects yet</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goals Preview -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🎯 Goal Progress</h2>
+                            <button class="btn-small" onclick="dashboard.switchSection('goals')">View All</button>
+                        </div>
+                        <div class="panel-content">
+                            <div id="goalsPreview" class="goals-list">
+                                <div class="goal-item">
+                                    <div class="goal-name">ThinkNLocal Scale</div>
+                                    <div class="goal-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 15%"></div>
+                                        </div>
+                                        <span class="progress-text">150/1000 partners</span>
+                                    </div>
+                                </div>
+                                <div class="goal-item">
+                                    <div class="goal-name">AQULOS Rebuild</div>
+                                    <div class="goal-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill blue" style="width: 35%"></div>
+                                        </div>
+                                        <span class="progress-text">In progress</span>
+                                    </div>
+                                </div>
+                                <div class="goal-item">
+                                    <div class="goal-name">PH Ventures</div>
+                                    <div class="goal-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill yellow" style="width: 60%"></div>
+                                        </div>
+                                        <span class="progress-text">Operational</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📊 Quick Stats</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="statTasksCompleted">0</div>
+                                    <div class="stat-label">Tasks Done</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="statProjectsActive">0</div>
+                                    <div class="stat-label">Active Projects</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="statResources">0</div>
+                                    <div class="stat-label">Resources</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="statWorkLog">0</div>
+                                    <div class="stat-label">Work Log Entries</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks Section -->
+            <section id="tasks" class="section">
+                <div class="section-header">
+                    <h1>Task Engine</h1>
+                    <p class="subtitle">Structured task management</p>
+                    <button class="btn-primary" onclick="dashboard.addTask()">+ New Task</button>
+                </div>
+
+                <div class="tasks-container">
+                    <!-- Active Tasks -->
+                    <div class="panel task-panel">
+                        <div class="panel-header">
+                            <h2>▶ Active Tasks</h2>
+                            <span class="count-badge" id="activeCount">0</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="activeTasksFull" class="task-list-detailed">
+                                <div class="empty-state">No active tasks</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Tasks -->
+                    <div class="panel task-panel">
+                        <div class="panel-header">
+                            <h2>◯ Pending</h2>
+                            <span class="count-badge" id="pendingCount">0</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="pendingTasksFull" class="task-list-detailed">
+                                <div class="empty-state">No pending tasks</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Tasks -->
+                    <div class="panel task-panel">
+                        <div class="panel-header">
+                            <h2>✓ Completed</h2>
+                            <span class="count-badge" id="completedCount">0</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="completedTasksFull" class="task-list-detailed">
+                                <div class="empty-state">No completed tasks</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="section">
+                <div class="section-header">
+                    <h1>Project & Work Log</h1>
+                    <p class="subtitle">Audit trail of all work</p>
+                    <button class="btn-primary" onclick="dashboard.addProject()">+ New Project</button>
+                </div>
+
+                <div class="projects-grid" id="projectsGrid">
+                    <div class="empty-state large">No projects yet. Create your first project to start tracking.</div>
+                </div>
+            </section>
+
+            <!-- Goals Section -->
+            <section id="goals" class="section">
+                <div class="section-header">
+                    <h1>Goals & KPI Control Center</h1>
+                    <p class="subtitle">2026 North Star tracking</p>
+                </div>
+
+                <div class="goals-dashboard">
+                    <!-- Primary Goals -->
+                    <div class="panel goal-panel primary">
+                        <div class="panel-header">
+                            <h2>🎯 2026 Primary Goals</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="primary-goal" data-goal="thinknlocal">
+                                <div class="goal-header">
+                                    <div class="goal-icon">🏪</div>
+                                    <div class="goal-info">
+                                        <h3>Scale ThinkNLocal</h3>
+                                        <p>1,000 local restaurants + retail at $150-200/mo</p>
+                                    </div>
+                                    <div class="goal-status">
+                                        <span class="status-pill in-progress">In Progress</span>
+                                    </div>
+                                </div>
+                                <div class="goal-metrics">
+                                    <div class="metric">
+                                        <span class="metric-value">150</span>
+                                        <span class="metric-label">Current Partners</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">1,000</span>
+                                        <span class="metric-label">Target</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">15%</span>
+                                        <span class="metric-label">Progress</span>
+                                    </div>
+                                </div>
+                                <div class="progress-bar large">
+                                    <div class="progress-fill" style="width: 15%"></div>
+                                </div>
+                                <div class="goal-kpis">
+                                    <h4>KPIs</h4>
+                                    <div class="kpi-grid">
+                                        <div class="kpi-item">
+                                            <span class="kpi-name">Partner Acquisition Rate</span>
+                                            <span class="kpi-value">12/mo</span>
+                                        </div>
+                                        <div class="kpi-item">
+                                            <span class="kpi-name">Retention Rate</span>
+                                            <span class="kpi-value">85%</span>
+                                        </div>
+                                        <div class="kpi-item">
+                                            <span class="kpi-name">Avg Revenue/Partner</span>
+                                            <span class="kpi-value">$165</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="primary-goal" data-goal="aqulos">
+                                <div class="goal-header">
+                                    <div class="goal-icon">🚀</div>
+                                    <div class="goal-info">
+                                        <h3>Rebuild AQULOS</h3>
+                                        <p>AI + automation-powered growth agency</p>
+                                    </div>
+                                    <div class="goal-status">
+                                        <span class="status-pill in-progress">In Progress</span>
+                                    </div>
+                                </div>
+                                <div class="goal-metrics">
+                                    <div class="metric">
+                                        <span class="metric-value">35%</span>
+                                        <span class="metric-label">Complete</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">4</span>
+                                        <span class="metric-label">Offers Defined</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">0</span>
+                                        <span class="metric-label">Active Clients</span>
+                                    </div>
+                                </div>
+                                <div class="progress-bar large">
+                                    <div class="progress-fill blue" style="width: 35%"></div>
+                                </div>
+                            </div>
+
+                            <div class="primary-goal" data-goal="ph">
+                                <div class="goal-header">
+                                    <div class="goal-icon">🏝️</div>
+                                    <div class="goal-info">
+                                        <h3>Philippine Ventures</h3>
+                                        <p>Dorm, farm, F&B operational success</p>
+                                    </div>
+                                    <div class="goal-status">
+                                        <span class="status-pill active">Active</span>
+                                    </div>
+                                </div>
+                                <div class="goal-metrics">
+                                    <div class="metric">
+                                        <span class="metric-value">60%</span>
+                                        <span class="metric-label">Operational</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">3</span>
+                                        <span class="metric-label">Ventures</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-value">+</span>
+                                        <span class="metric-label">Cash Flow</span>
+                                    </div>
+                                </div>
+                                <div class="progress-bar large">
+                                    <div class="progress-fill yellow" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk & Blockers -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>⚠️ Risks & Blockers</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div id="risksList" class="risks-list">
+                                <div class="risk-item high">
+                                    <span class="risk-indicator"></span>
+                                    <div class="risk-content">
+                                        <span class="risk-title">Limited capital for growth</span>
+                                        <span class="risk-mitigation">Mitigation: Focus on revenue-positive moves</span>
+                                    </div>
+                                </div>
+                                <div class="risk-item medium">
+                                    <span class="risk-indicator"></span>
+                                    <div class="risk-content">
+                                        <span class="risk-title">US/PH time zone coordination</span>
+                                        <span class="risk-mitigation">Mitigation: Async workflows, clear SOPs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Communications Section -->
+            <section id="communications" class="section">
+                <div class="section-header">
+                    <h1>Communications & Calendar</h1>
+                    <p class="subtitle">Email, calendar, and drive awareness (when connected)</p>
+                </div>
+
+                <div class="comm-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📧 Email Tracking</h2>
+                            <span class="connection-status">⚡ Connected</span>
+                        </div>
+                        <div class="panel-content">
+                            <div class="email-filters">
+                                <button class="filter-btn active">All</button>
+                                <button class="filter-btn">Revenue</button>
+                                <button class="filter-btn">Ops</button>
+                                <button class="filter-btn">Partnerships</button>
+                            </div>
+                            <div id="emailList" class="email-list">
+                                <div class="empty-state">No flagged emails</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📅 Calendar</h2>
+                            <span class="connection-status">⚡ Connected</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="calendarList" class="calendar-list">
+                                <div class="empty-state">No upcoming events</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📁 Recent Documents</h2>
+                            <span class="connection-status">⚡ Connected</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="documentsList" class="documents-list">
+                                <div class="document-item">
+                                    <span class="doc-icon">📄</span>
+                                    <div class="doc-info">
+                                        <span class="doc-name">JARVIS_OS.md</span>
+                                        <span class="doc-meta">Updated today</span>
+                                    </div>
+                                </div>
+                                <div class="document-item">
+                                    <span class="doc-icon">📄</span>
+                                    <div class="doc-info">
+                                        <span class="doc-name">USER.md</span>
+                                        <span class="doc-meta">Updated today</span>
+                                    </div>
+                                </div>
+                                <div class="document-item">
+                                    <span class="doc-icon">📄</span>
+                                    <div class="doc-info">
+                                        <span class="doc-name">MEMORY.md</span>
+                                        <span class="doc-meta">Updated today</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="section">
+                <div class="section-header">
+                    <h1>Resource Vault</h1>
+                    <p class="subtitle">Bookmarks, articles, tools, and references</p>
+                    <button class="btn-primary" onclick="dashboard.addResource()">+ Add Resource</button>
+                </div>
+
+                <div class="resources-container">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📚 All Resources</h2>
+                            <div class="resource-filters">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="to-review">To Review</button>
+                                <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                                <button class="filter-btn" data-filter="completed">Completed</button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div id="resourcesList" class="resources-list">
+                                <div class="empty-state">No resources saved yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Work Log Section -->
+            <section id="logs" class="section">
+                <div class="section-header">
+                    <h1>Work Log</h1>
+                    <p class="subtitle">Chronological history of all activity</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📋 Activity History</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="workLog" class="work-log">
+                            <div class="log-entry">
+                                <span class="log-time">09:33</span>
+                                <span class="log-icon">◉</span>
+                                <span class="log-text">Dashboard initialized</span>
+                                <span class="log-tag">system</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+    
+    <!-- Add Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-header">
+            <h3>New Task</h3>
+            <button class="modal-close" onclick="dashboard.closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Task Name</label>
+                <input type="text" id="taskName" placeholder="Enter task name">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="taskDesc" placeholder="Enter description"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="taskPriority">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="taskStatus">
+                        <option value="active">Active</option>
+                        <option value="pending" selected>Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Project</label>
+                <select id="taskProject">
+                    <option value="">No Project</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ETA</label>
+                <input type="datetime-local" id="taskETA">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="dashboard.closeModal()">Cancel</button>
+            <button class="btn-primary" onclick="dashboard.saveTask()">Save Task</button>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

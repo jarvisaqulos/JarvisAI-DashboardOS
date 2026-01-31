@@ -1,0 +1,16 @@
+{
+  "name": "jarvis-aqulos-dashboard",
+  "version": "2.0.0",
+  "description": "Jarvis Aqulos Operating System - Dark Mode Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["dashboard", "productivity", "os", "dark-mode"],
+  "author": "Jarvis Aqulos",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
