@@ -105,9 +105,9 @@
                                 <div class="status-sublabel">Ready for work</div>
                             </div>
                             <div class="status-card">
-                                <div class="status-label">Active Task</div>
-                                <div class="status-value" id="activeTask">None</div>
-                                <div class="status-sublabel" id="taskProgress">--</div>
+                                <div class="status-label">Jarvis Working On</div>
+                                <div class="status-value" id="activeTask">Nothing</div>
+                                <div class="status-sublabel" id="taskProgress">Ready for assignment</div>
                             </div>
                             <div class="status-card">
                                 <div class="status-label">Last Action</div>
@@ -128,7 +128,7 @@
                     <!-- Active Tasks Summary -->
                     <div class="panel">
                         <div class="panel-header">
-                            <h2>🧩 Active Tasks</h2>
+                            <h2>🧩 Jarvis Active Tasks</h2>
                             <button class="btn-small" onclick="dashboard.switchSection('tasks')">View All</button>
                         </div>
                         <div class="panel-content">
@@ -222,16 +222,16 @@
             <!-- Tasks Section -->
             <section id="tasks" class="section">
                 <div class="section-header">
-                    <h1>Task Engine</h1>
-                    <p class="subtitle">Structured task management</p>
-                    <button class="btn-primary" onclick="dashboard.addTask()">+ New Task</button>
+                    <h1>🤖 Jarvis Task Engine</h1>
+                    <p class="subtitle">Track what Jarvis is working on for you</p>
+                    <button class="btn-primary" onclick="dashboard.addTask()">+ Assign Task</button>
                 </div>
 
                 <div class="tasks-container">
                     <!-- Active Tasks -->
                     <div class="panel task-panel">
                         <div class="panel-header">
-                            <h2>▶ Active Tasks</h2>
+                            <h2>▶ Jarvis Currently Working On</h2>
                             <span class="count-badge" id="activeCount">0</span>
                         </div>
                         <div class="panel-content">
@@ -244,7 +244,7 @@
                     <!-- Pending Tasks -->
                     <div class="panel task-panel">
                         <div class="panel-header">
-                            <h2>◯ Pending</h2>
+                            <h2>◯ Queued for Jarvis</h2>
                             <span class="count-badge" id="pendingCount">0</span>
                         </div>
                         <div class="panel-content">
@@ -257,7 +257,7 @@
                     <!-- Completed Tasks -->
                     <div class="panel task-panel">
                         <div class="panel-header">
-                            <h2>✓ Completed</h2>
+                            <h2>✓ Completed by Jarvis</h2>
                             <span class="count-badge" id="completedCount">0</span>
                         </div>
                         <div class="panel-content">
@@ -564,7 +564,7 @@
     <!-- Add Task Modal -->
     <div id="taskModal" class="modal">
         <div class="modal-header">
-            <h3>New Task</h3>
+            <h3>🤖 Assign Task to Jarvis</h3>
             <button class="modal-close" onclick="dashboard.closeModal()">×</button>
         </div>
         <div class="modal-body">

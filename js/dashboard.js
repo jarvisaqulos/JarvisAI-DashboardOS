@@ -305,7 +305,7 @@ class JarvisDashboard {
         }
     }
 
-    // Task Management
+    // Task Management - These are tasks FOR JARVIS (assigned by Kris)
     addTask() {
         this.openModal('taskModal');
         this.populateProjectSelect();
@@ -324,6 +324,7 @@ class JarvisDashboard {
             return;
         }
         
+        // Task assigned TO JARVIS by Kris
         const task = {
             id: Date.now().toString(),
             name,
@@ -332,6 +333,8 @@ class JarvisDashboard {
             status,
             project,
             eta,
+            assignee: 'jarvis',  // Task is for Jarvis
+            assignedBy: 'kris',  // Assigned by Kris
             created: new Date().toISOString(),
             completed: status === 'completed' ? new Date().toISOString() : null
         };
@@ -340,7 +343,7 @@ class JarvisDashboard {
         this.saveData();
         this.renderTasks();
         this.closeModal();
-        this.addLogEntry(`Task created: ${name}`, 'task');
+        this.addLogEntry(`Task assigned to Jarvis: ${name}`, 'task');
         
         // Clear form
         document.getElementById('taskName').value = '';
@@ -487,10 +490,10 @@ class JarvisDashboard {
         }
         
         // Render lists
-        activeList.innerHTML = active.length ? active.map(t => this.renderTaskItem(t)).join('') : '<div class="empty-state">No active tasks</div>';
-        activeFull.innerHTML = active.length ? active.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No active tasks</div>';
-        pendingFull.innerHTML = pending.length ? pending.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No pending tasks</div>';
-        completedFull.innerHTML = completed.length ? completed.slice(0, 10).map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No completed tasks</div>';
+        activeList.innerHTML = active.length ? active.map(t => this.renderTaskItem(t)).join('') : '<div class="empty-state">Jarvis is ready - assign a task to get started</div>';
+        activeFull.innerHTML = active.length ? active.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No active tasks - Jarvis is ready for assignment</div>';
+        pendingFull.innerHTML = pending.length ? pending.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No queued tasks</div>';
+        completedFull.innerHTML = completed.length ? completed.slice(0, 10).map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No completed tasks yet</div>';
     }
 
     renderTaskItem(task) {
@@ -513,7 +516,7 @@ class JarvisDashboard {
             <div class="task-item">
                 <div class="task-priority ${task.priority}"></div>
                 <div class="task-info">
-                    <div class="task-name">${task.name}</div>
+                    <div class="task-name">🤖 ${task.name}</div>
                     <div class="task-meta">${task.description || 'No description'} • ${project ? project.name : 'No project'}</div>
                 </div>
                 <div class="task-actions">
@@ -694,7 +697,7 @@ class JarvisDashboard {
     viewTask(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task) {
-            alert(`Task: ${task.name}\nDescription: ${task.description || 'None'}\nPriority: ${task.priority}\nStatus: ${task.status}`);
+            alert(`🤖 Task Assigned to Jarvis\n\nName: ${task.name}\nDescription: ${task.description || 'None'}\nPriority: ${task.priority}\nStatus: ${task.status}\nAssigned by: ${task.assignedBy || 'Kris'}\nCreated: ${this.formatDate(task.created)}`);
         }
     }
 }
