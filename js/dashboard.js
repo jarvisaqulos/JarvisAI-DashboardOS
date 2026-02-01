@@ -22,13 +22,13 @@ class JarvisDashboard {
     }
 
     init() {
-        this.loadData();
+        const hadExistingData = this.loadData();
         this.setupEventListeners();
         this.startClock();
         this.startEmailHeartbeat(); // Start email checking
         this.startCalendarHeartbeat(); // Start calendar checking
         
-        // Initialize with default tasks if empty
+        // Initialize with default tasks if empty or no existing data
         if (this.tasks.length === 0) {
             this.initializeDefaultTasks();
         }
@@ -381,12 +381,9 @@ class JarvisDashboard {
             this.delegations = data.delegations || [];
             this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
             this.weeklyReviews = data.weeklyReviews || [];
+            return true; // Data was found and loaded
         }
-        
-        // Load initial projects if none exist
-        if (this.projects.length === 0) {
-            this.initializeDefaultProjects();
-        }
+        return false; // No data found
     }
 
     saveData() {
