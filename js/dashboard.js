@@ -1273,12 +1273,13 @@ class JarvisDashboard {
     
     renderAll() {
         this.renderStatus();
-        this.renderActiveTasks();
-        this.renderTaskList();
+        this.renderTasks();
         this.renderProjects();
         this.renderGoals();
         this.renderResources();
         this.renderWorkLog();
+        this.renderEmails();
+        this.renderCalendar();
         // New modules
         this.renderDecisions();
         this.renderDelegations();
