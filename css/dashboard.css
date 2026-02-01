@@ -368,6 +368,22 @@ body {
     text-align: center;
 }
 
+/* Debug Tools */
+.debug-tools {
+    margin-top: 20px;
+    padding: 20px 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.debug-tools h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    padding: 0 4px;
+}
+
 /* Main Content */
 .content {
     flex: 1;

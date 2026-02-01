@@ -18,33 +18,50 @@ class JarvisDashboard {
         this.events = [];
         this.lastCalendarCheck = null;
         
-        this.init();
+        console.log('Constructor called, waiting for DOM...');
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
 
     init() {
         console.log('Dashboard init started');
-        const hadExistingData = this.loadData();
-        console.log('loadData returned:', hadExistingData, 'tasks length:', this.tasks.length);
+        
+        // FORCE RESET: Always clear and reload tasks on init (temporary for debugging)
+        console.log('Clearing localStorage and forcing task reload...');
+        localStorage.removeItem('jarvisDashboardData');
+        
+        this.loadData();
+        console.log('After loadData, tasks length:', this.tasks.length);
         
         this.setupEventListeners();
         this.startClock();
-        this.startEmailHeartbeat(); // Start email checking
-        this.startCalendarHeartbeat(); // Start calendar checking
+        this.startEmailHeartbeat();
+        this.startCalendarHeartbeat();
         
-        // Initialize with default tasks if empty or no existing data
-        if (this.tasks.length === 0) {
-            console.log('No tasks found, initializing defaults...');
-            this.initializeDefaultTasks();
-        }
+        // ALWAYS initialize default tasks
+        console.log('Initializing default tasks...');
+        this.initializeDefaultTasks();
         
-        console.log('Before renderAll, tasks:', this.tasks.length);
+        console.log('After init, tasks:', this.tasks.length);
+        console.log('Task 1:', this.tasks[0]);
+        
         this.renderAll();
-        this.addLogEntry('Dashboard initialized', 'system');
+        this.addLogEntry('Dashboard initialized with ' + this.tasks.length + ' tasks', 'system');
         
-        // Initial status
         this.setStatus('idle');
         
         console.log('🤖 Jarvis Aqulos Dashboard initialized');
+    }
+
+    // Force reset all data
+    forceReset() {
+        localStorage.clear();
+        location.reload();
     }
 
     // Initialize default tasks for Jarvis
