@@ -1320,16 +1320,17 @@ class JarvisDashboard {
     // ========== PSE PORTFOLIO TRACKER ==========
 
     initializePSEPortfolio() {
-        // Kris's actual portfolio - 8 holdings
+        // Placeholder - user needs to input actual holdings
+        // Total should be ₱208,938.42
         const defaultHoldings = [
-            { symbol: 'SM', name: 'SM Investments', shares: 100, avgCost: 855.00, lastPrice: 875.00, dayChange: 0 },
-            { symbol: 'AC', name: 'Ayala Corp', shares: 120, avgCost: 625.50, lastPrice: 650.00, dayChange: 0 },
-            { symbol: 'BDO', name: 'BDO Unibank', shares: 300, avgCost: 138.20, lastPrice: 142.00, dayChange: 0 },
-            { symbol: 'AP', name: 'Aboitiz Power', shares: 2000, avgCost: 34.80, lastPrice: 35.50, dayChange: 0 },
-            { symbol: 'TEL', name: 'PLDT', shares: 80, avgCost: 1380.00, lastPrice: 1425.00, dayChange: 0 },
-            { symbol: 'GLO', name: 'Globe Telecom', shares: 50, avgCost: 1920.00, lastPrice: 1950.00, dayChange: 0 },
-            { symbol: 'MER', name: 'Meralco', shares: 150, avgCost: 285.00, lastPrice: 295.00, dayChange: 0 },
-            { symbol: 'JGS', name: 'JG Summit', shares: 400, avgCost: 66.00, lastPrice: 68.50, dayChange: 0 }
+            { symbol: 'SM', name: 'SM Investments', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'AC', name: 'Ayala Corp', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'BDO', name: 'BDO Unibank', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'AP', name: 'Aboitiz Power', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'TEL', name: 'PLDT', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'GLO', name: 'Globe Telecom', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'MER', name: 'Meralco', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
+            { symbol: 'JGS', name: 'JG Summit', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 }
         ];
 
         const defaultWatchlist = [
