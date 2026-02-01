@@ -1010,7 +1010,7 @@ class JarvisDashboard {
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Last Checked:</span>
-                            <span class="detail-value">${this.timeAgo(provider.lastChecked)}</span>
+                            <span class="detail-value">${this.formatTime(provider.lastChecked)}</span>
                         </div>
                     </div>
                     ${provider.notes ? `<div class="provider-notes">${provider.notes}</div>` : ''}
