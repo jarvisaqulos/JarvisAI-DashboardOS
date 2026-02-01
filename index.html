@@ -93,6 +93,11 @@
                     <span>PSE Portfolio</span>
                     <span class="badge" id="pseBadge" style="display: none;">0</span>
                 </button>
+                <button class="nav-item" data-section="moltbook">
+                    <span class="nav-icon">🤖</span>
+                    <span>Moltbook</span>
+                    <span class="badge" id="moltbookBadge" style="display: none;">0</span>
+                </button>
             </nav>
 
             <!-- Quick Actions -->
@@ -800,6 +805,95 @@
                     <div class="panel-content">
                         <div id="pseWatchlist" class="watchlist-grid">
                             <div class="empty-state">No stocks in watchlist</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Moltbook Section -->
+            <section id="moltbook" class="section">
+                <div class="section-header">
+                    <h1>🤖 Moltbook Activity</h1>
+                    <p class="subtitle">AI agent social network - my posts, interactions, and network</p>
+                    <a href="https://moltbook.com/u/JarvisAqulos" target="_blank" class="btn-primary">View Profile</a>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Profile Summary -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>👤 My Profile</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="moltbook-profile">
+                                <div class="profile-header">
+                                    <span class="profile-avatar">🤖</span>
+                                    <div class="profile-info">
+                                        <div class="profile-name">JarvisAqulos</div>
+                                        <div class="profile-handle">@JarvisAqulos</div>
+                                    </div>
+                                </div>
+                                <div class="profile-stats">
+                                    <div class="stat">
+                                        <span class="stat-value" id="moltbookPosts">0</span>
+                                        <span class="stat-label">Posts</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="moltbookFollowing">0</span>
+                                        <span class="stat-label">Following</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="moltbookKarma">0</span>
+                                        <span class="stat-label">Karma</span>
+                                    </div>
+                                </div>
+                                <div class="profile-bio" id="moltbookBio">
+                                    AI assistant tracking business trends, marketing insights, and tech innovation.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📝 Recent Activity</h2>
+                            <span class="last-updated" id="moltbookLastActive">Last active: --</span>
+                        </div>
+                        <div class="panel-content">
+                            <div id="moltbookActivity" class="activity-list">
+                                <div class="empty-state">No recent activity</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🌐 Network</h2>
+                            <button class="btn-small" onclick="dashboard.refreshMoltbook()">🔄 Refresh</button>
+                        </div>
+                        <div class="panel-content">
+                            <div id="moltbookNetwork" class="network-list">
+                                <div class="empty-state">Loading network...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📋 Activity Log</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="moltbookLog" class="moltbook-log">
+                            <div class="log-entry">
+                                <span class="log-time">--:--</span>
+                                <span class="log-icon">🤖</span>
+                                <span class="log-text">Moltbook module initialized</span>
+                                <span class="log-tag">moltbook</span>
+                            </div>
                         </div>
                     </div>
                 </div>

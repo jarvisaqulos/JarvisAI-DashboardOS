@@ -92,3 +92,182 @@
     border-color: var(--accent-red);
     color: var(--accent-red);
 }
+
+/* ========== MOLTBOOK MODULE ========== */
+
+.moltbook-profile {
+    padding: 16px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.profile-handle {
+    font-size: 14px;
+    color: var(--text-tertiary);
+}
+
+.profile-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-stats .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-stats .stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.profile-stats .stat-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-bio {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent-green);
+}
+
+.activity-item.post {
+    border-left-color: var(--accent-green);
+}
+
+.activity-item.comment {
+    border-left-color: var(--accent-blue);
+}
+
+.activity-item.follow {
+    border-left-color: var(--accent-yellow);
+}
+
+.activity-icon {
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.activity-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.network-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.network-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.network-avatar {
+    font-size: 20px;
+}
+
+.network-info {
+    flex: 1;
+}
+
+.network-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.network-handle {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.network-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.network-status.active {
+    background: rgba(0, 210, 106, 0.15);
+    color: var(--accent-green);
+}
+
+.moltbook-log {
+    max-height: 400px;
+    overflow-y: auto;
+}

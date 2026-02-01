@@ -48,6 +48,11 @@ class JarvisDashboard {
             this.initializePSEPortfolio();
         }
         
+        // Initialize Moltbook
+        if (!this.moltbook) {
+            this.initializeMoltbook();
+        }
+        
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         this.setStatus('idle');
@@ -64,6 +69,124 @@ class JarvisDashboard {
         if (confirm('⚠️ Reset all dashboard data?\n\nThis will clear:\n- All tasks\n- Projects\n- Portfolio data\n- Work log\n\nClick OK to reset everything.')) {
             this.forceReset();
         }
+    }
+
+    // ========== MOLTBOOK MODULE ==========
+
+    initializeMoltbook() {
+        this.moltbook = {
+            profile: {
+                username: 'JarvisAqulos',
+                displayName: 'JarvisAqulos',
+                bio: 'AI assistant tracking business trends, marketing insights, and tech innovation.',
+                karma: 0,
+                posts: 0,
+                following: 0,
+                followers: 0
+            },
+            activity: [],
+            network: [],
+            lastActive: new Date().toISOString()
+        };
+        this.saveData();
+        this.addLogEntry('Moltbook module initialized', 'moltbook');
+    }
+
+    renderMoltbook() {
+        if (!this.moltbook) {
+            this.initializeMoltbook();
+        }
+
+        const profile = this.moltbook.profile;
+        const activity = this.moltbook.activity || [];
+        const network = this.moltbook.network || [];
+
+        // Update profile stats
+        const postsEl = document.getElementById('moltbookPosts');
+        const followingEl = document.getElementById('moltbookFollowing');
+        const karmaEl = document.getElementById('moltbookKarma');
+        const bioEl = document.getElementById('moltbookBio');
+        const lastActiveEl = document.getElementById('moltbookLastActive');
+
+        if (postsEl) postsEl.textContent = profile.posts;
+        if (followingEl) followingEl.textContent = profile.following;
+        if (karmaEl) karmaEl.textContent = profile.karma;
+        if (bioEl) bioEl.textContent = profile.bio;
+        if (lastActiveEl) lastActiveEl.textContent = 'Last active: ' + this.formatDate(this.moltbook.lastActive);
+
+        // Render activity
+        const activityEl = document.getElementById('moltbookActivity');
+        if (activityEl) {
+            if (activity.length === 0) {
+                activityEl.innerHTML = '<div class="empty-state">No recent activity</div>';
+            } else {
+                activityEl.innerHTML = activity.slice(0, 10).map(a => `
+                    <div class="activity-item ${a.type}">
+                        <div class="activity-icon">${a.icon || '🤖'}</div>
+                        <div class="activity-content">
+                            <div class="activity-text">${a.text}</div>
+                            <div class="activity-time">${this.formatTime(a.timestamp)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Render network
+        const networkEl = document.getElementById('moltbookNetwork');
+        if (networkEl) {
+            if (network.length === 0) {
+                networkEl.innerHTML = '<div class="empty-state">Start following other agents to build your network</div>';
+            } else {
+                networkEl.innerHTML = network.map(n => `
+                    <div class="network-item">
+                        <span class="network-avatar">${n.avatar || '🤖'}</span>
+                        <div class="network-info">
+                            <div class="network-name">${n.name}</div>
+                            <div class="network-handle">@${n.username}</div>
+                        </div>
+                        <span class="network-status ${n.status || 'active'}">${n.status || 'active'}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Update badge
+        const badge = document.getElementById('moltbookBadge');
+        if (badge) {
+            const unreadCount = activity.filter(a => !a.read).length;
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'inline' : 'none';
+        }
+    }
+
+    refreshMoltbook() {
+        this.addLogEntry('Refreshing Moltbook data...', 'moltbook');
+        // In future, this would call Moltbook API
+        alert('Moltbook refresh: In production, this would sync with moltbook.com API');
+    }
+
+    addMoltbookActivity(text, type = 'post', icon = '🤖') {
+        if (!this.moltbook) this.initializeMoltbook();
+        if (!this.moltbook.activity) this.moltbook.activity = [];
+
+        this.moltbook.activity.unshift({
+            id: 'mb-' + Date.now(),
+            text,
+            type,
+            icon,
+            timestamp: new Date().toISOString(),
+            read: false
+        });
+
+        // Update post count
+        if (type === 'post' && this.moltbook.profile) {
+            this.moltbook.profile.posts++;
+        }
+
+        this.moltbook.lastActive = new Date().toISOString();
+        this.saveData();
+        this.renderMoltbook();
     }
 
     // Initialize default tasks for Jarvis (small, 1-3 step items)
@@ -470,6 +593,7 @@ class JarvisDashboard {
             this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
             this.weeklyReviews = data.weeklyReviews || [];
             this.psePortfolio = data.psePortfolio || null;
+            this.moltbook = data.moltbook || null;
             return true; // Data was found and loaded
         }
         return false; // No data found
@@ -489,7 +613,8 @@ class JarvisDashboard {
             delegations: this.delegations || [],
             phVentures: this.phVentures || { businesses: [], team: [], checkIns: [] },
             weeklyReviews: this.weeklyReviews || [],
-            psePortfolio: this.psePortfolio || null
+            psePortfolio: this.psePortfolio || null,
+            moltbook: this.moltbook || null
         };
         localStorage.setItem('jarvisDashboardData', JSON.stringify(data));
     }
@@ -798,6 +923,7 @@ class JarvisDashboard {
         this.updateEmailStatus();
         this.updateCalendarStatus();
         this.renderPSEPortfolio();
+        this.renderMoltbook();
     }
 
     renderTasks() {
