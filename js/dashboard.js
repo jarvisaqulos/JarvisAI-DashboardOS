@@ -1285,25 +1285,6 @@ class JarvisDashboard {
         const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
         return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     }
-
-    // ========== ENHANCED RENDER ALL ==========
-    
-    renderAll() {
-        this.renderStatus();
-        this.renderTasks();
-        this.renderProjects();
-        this.renderGoals();
-        this.renderResources();
-        this.renderWorkLog();
-        this.renderEmails();
-        this.renderCalendar();
-        // New modules
-        this.renderDecisions();
-        this.renderDelegations();
-        this.renderPHVentures();
-        this.renderWeeklyReviews();
-    }
-
 }
 
 // Initialize dashboard
