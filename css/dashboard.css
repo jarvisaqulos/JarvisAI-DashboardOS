@@ -227,31 +227,3 @@
     font-size: 11px;
     color: var(--text-tertiary);
 }
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.data-table th,
-.data-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.data-table th {
-    font-weight: 600;
-    color: var(--text-secondary);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.data-table td {
-    font-size: 13px;
-}
-
-.data-table tr:hover {
-    background: var(--bg-hover);
-}
