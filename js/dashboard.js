@@ -27,6 +27,12 @@ class JarvisDashboard {
         this.startClock();
         this.startEmailHeartbeat(); // Start email checking
         this.startCalendarHeartbeat(); // Start calendar checking
+        
+        // Initialize with default tasks if empty
+        if (this.tasks.length === 0) {
+            this.initializeDefaultTasks();
+        }
+        
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         
@@ -34,6 +40,130 @@ class JarvisDashboard {
         this.setStatus('idle');
         
         console.log('🤖 Jarvis Aqulos Dashboard initialized');
+    }
+
+    // Initialize default tasks for Jarvis
+    initializeDefaultTasks() {
+        const defaultTasks = [
+            {
+                id: 'task-001',
+                name: 'Build Jarvis Dashboard v2.0',
+                description: 'Create comprehensive dashboard with Task Engine, Decision Log, Delegation Tracker, PH Ventures, Weekly Review modules',
+                priority: 'high',
+                status: 'active',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date(Date.now() - 2 * 86400000).toISOString(),
+                completed: null
+            },
+            {
+                id: 'task-002',
+                name: 'Set up X (Twitter) monitoring system',
+                description: 'Create watchlist, follow key accounts, set up daily cron job for trend monitoring',
+                priority: 'high',
+                status: 'completed',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date(Date.now() - 1 * 86400000).toISOString(),
+                completed: new Date().toISOString()
+            },
+            {
+                id: 'task-003',
+                name: 'Update X profile @JAqulos67857',
+                description: 'Update bio with entrepreneurship focus, follow 60+ accounts, set up daily monitoring',
+                priority: 'high',
+                status: 'completed',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date(Date.now() - 1 * 86400000).toISOString(),
+                completed: new Date().toISOString()
+            },
+            {
+                id: 'task-004',
+                name: 'Generate daily X trend briefs',
+                description: 'Monitor followed accounts, extract key insights, generate 3-5 point briefs for restaurant marketing, AI, entrepreneurship trends',
+                priority: 'medium',
+                status: 'pending',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date().toISOString(),
+                completed: null
+            },
+            {
+                id: 'task-005',
+                name: 'Heartbeat monitoring (email, calendar, tasks)',
+                description: 'Check emails every 30min, calendar every hour, task status updates, proactive alerts for urgent items',
+                priority: 'medium',
+                status: 'active',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date(Date.now() - 2 * 86400000).toISOString(),
+                completed: null
+            },
+            {
+                id: 'task-006',
+                name: 'Weekly dashboard review generation',
+                description: 'Auto-compile weekly summary every Friday: wins, project progress, blockers, next week priorities',
+                priority: 'medium',
+                status: 'pending',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date().toISOString(),
+                completed: null
+            },
+            {
+                id: 'task-007',
+                name: 'PH Ventures check-ins',
+                description: 'Weekly async check-ins with Philippines team: dorm operations, farm progress, F&B updates',
+                priority: 'medium',
+                status: 'pending',
+                project: 'ph-ventures',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date().toISOString(),
+                completed: null
+            },
+            {
+                id: 'task-008',
+                name: 'Decision logging and tracking',
+                description: 'Log all strategic decisions with context, alternatives considered, and review dates',
+                priority: 'low',
+                status: 'active',
+                project: '',
+                assignee: 'jarvis',
+                assignedBy: 'kris',
+                created: new Date().toISOString(),
+                completed: null
+            }
+        ];
+        
+        this.tasks = defaultTasks;
+        this.saveData();
+        this.addLogEntry('Initialized with ' + defaultTasks.length + ' default tasks', 'system');
+    }
+
+    // Show/hide working indicator
+    setWorking(isWorking) {
+        const logo = document.getElementById('jarvisLogo');
+        const indicator = document.getElementById('workingIndicator');
+        
+        if (logo) {
+            if (isWorking) {
+                logo.classList.add('working');
+            } else {
+                logo.classList.remove('working');
+            }
+        }
+        
+        if (indicator) {
+            indicator.style.display = isWorking ? 'flex' : 'none';
+        }
     }
 
     // Email Heartbeat - Check every 30 minutes
@@ -326,6 +456,9 @@ class JarvisDashboard {
         
         // Save to localStorage for persistence
         localStorage.setItem('jarvisStatus', status);
+        
+        // Update working indicator based on status
+        this.setWorking(status === 'active');
     }
 
     updateStatusUI() {
@@ -805,6 +938,373 @@ class JarvisDashboard {
         if (task) {
             alert(`🤖 Task Assigned to Jarvis\n\nName: ${task.name}\nDescription: ${task.description || 'None'}\nPriority: ${task.priority}\nStatus: ${task.status}\nAssigned by: ${task.assignedBy || 'Kris'}\nCreated: ${this.formatDate(task.created)}`);
         }
+    }
+
+    // ========== DECISION LOG MODULE ==========
+    
+    renderDecisions() {
+        const container = document.getElementById('decisionsList');
+        if (!container) return;
+        
+        if (!this.decisions || this.decisions.length === 0) {
+            container.innerHTML = '<div class="empty-state">No decisions logged yet</div>';
+            return;
+        }
+        
+        container.innerHTML = this.decisions.map(d => `
+            <div class="decision-card ${d.reversible ? 'reversible' : 'final'}">
+                <div class="decision-header">
+                    <span class="decision-date">${this.formatDate(d.timestamp)}</span>
+                    <span class="decision-badge ${d.reversible ? 'reversible' : 'final'}">${d.reversible ? 'Reversible' : 'Final'}</span>
+                </div>
+                <div class="decision-title">${d.decision}</div>
+                <div class="decision-context">${d.context}</div>
+                <div class="decision-why"><strong>Why:</strong> ${d.why}</div>
+                ${d.alternatives ? `<div class="decision-alts"><strong>Alternatives:</strong> ${d.alternatives.join(', ')}</div>` : ''}
+                ${d.outcome ? `<div class="decision-outcome"><strong>Outcome:</strong> ${d.outcome}</div>` : ''}
+                ${d.reviewDate ? `<div class="decision-review">Review: ${d.reviewDate}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    addDecision() {
+        const decision = prompt('Decision made:');
+        if (!decision) return;
+        
+        const context = prompt('Context (why this decision was needed):');
+        const why = prompt('Why this path (reasoning):');
+        const reversible = confirm('Is this decision reversible?');
+        
+        if (!this.decisions) this.decisions = [];
+        
+        this.decisions.unshift({
+            id: 'dec-' + Date.now(),
+            decision,
+            context: context || '',
+            why: why || '',
+            reversible,
+            timestamp: new Date().toISOString(),
+            madeBy: 'Kris',
+            outcome: null
+        });
+        
+        this.saveData();
+        this.renderDecisions();
+        this.addLogEntry('Decision logged: ' + decision, 'decision');
+    }
+
+    // ========== DELEGATION TRACKER MODULE ==========
+    
+    renderDelegations() {
+        const container = document.getElementById('delegationsList');
+        const badge = document.getElementById('delegationBadge');
+        if (!container) return;
+        
+        if (!this.delegations || this.delegations.length === 0) {
+            container.innerHTML = '<div class="empty-state">No active delegations</div>';
+            if (badge) badge.style.display = 'none';
+            return;
+        }
+        
+        const activeCount = this.delegations.filter(d => d.status === 'active').length;
+        if (badge) {
+            badge.textContent = activeCount;
+            badge.style.display = activeCount > 0 ? 'inline' : 'none';
+        }
+        
+        container.innerHTML = this.delegations.map(d => {
+            const isOverdue = new Date(d.escalationDate) < new Date();
+            return `
+            <div class="delegation-card ${d.status} ${isOverdue ? 'overdue' : ''}">
+                <div class="delegation-header">
+                    <span class="delegation-owner">${d.owner}</span>
+                    <span class="delegation-status ${d.status}">${d.status}</span>
+                </div>
+                <div class="delegation-task">${d.task}</div>
+                <div class="delegation-meta">
+                    <span>Due: ${this.formatDate(d.dueDate)}</span>
+                    <span>Check-in: ${d.checkInFrequency}</span>
+                </div>
+                ${isOverdue ? '<div class="escalation-warning">⚠️ Escalation overdue</div>' : ''}
+                <div class="delegation-notes">${d.notes || ''}</div>
+            </div>
+        `}).join('');
+    }
+
+    addDelegation() {
+        const task = prompt('Task to delegate:');
+        if (!task) return;
+        
+        const owner = prompt('Owner (name):');
+        const dueDate = prompt('Due date (YYYY-MM-DD):');
+        const checkIn = prompt('Check-in frequency (daily/weekly):', 'weekly');
+        
+        if (!this.delegations) this.delegations = [];
+        
+        this.delegations.push({
+            id: 'del-' + Date.now(),
+            task,
+            owner: owner || 'TBD',
+            dueDate: dueDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+            checkInFrequency: checkIn || 'weekly',
+            lastContact: new Date().toISOString(),
+            status: 'active',
+            escalationDate: dueDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+            notes: ''
+        });
+        
+        this.saveData();
+        this.renderDelegations();
+        this.addLogEntry('Delegation created: ' + task + ' → ' + owner, 'delegation');
+    }
+
+    // ========== PH VENTURES MODULE ==========
+    
+    renderPHVentures() {
+        const timeEl = document.getElementById('phTime');
+        const container = document.getElementById('phBusinesses');
+        const checkinsEl = document.getElementById('phCheckIns');
+        
+        if (timeEl) {
+            const now = new Date();
+            const phTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+            timeEl.textContent = phTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        if (!this.phVentures) {
+            this.phVentures = {
+                businesses: [],
+                team: [],
+                checkIns: []
+            };
+        }
+        
+        if (container) {
+            if (!this.phVentures.businesses || this.phVentures.businesses.length === 0) {
+                container.innerHTML = '<div class="empty-state">No PH ventures configured</div>';
+            } else {
+                container.innerHTML = this.phVentures.businesses.map(b => `
+                    <div class="ph-business-card ${b.status}">
+                        <div class="business-header">
+                            <span class="business-name">${b.name}</span>
+                            <span class="business-type">${b.type}</span>
+                        </div>
+                        <div class="business-status">Status: ${b.status}</div>
+                        ${b.manager ? `<div class="business-manager">Manager: ${b.manager}</div>` : ''}
+                        ${b.weeklyCheckIn ? `<div class="business-checkin">Last check-in: ${this.formatDate(b.weeklyCheckIn)}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+        
+        if (checkinsEl) {
+            if (!this.phVentures.checkIns || this.phVentures.checkIns.length === 0) {
+                checkinsEl.innerHTML = '<div class="empty-state">No check-ins yet</div>';
+            } else {
+                checkinsEl.innerHTML = this.phVentures.checkIns.map(c => `
+                    <div class="checkin-entry">
+                        <span class="checkin-date">${this.formatDate(c.date)}</span>
+                        <span class="checkin-business">${c.business}</span>
+                        <span class="checkin-summary">${c.summary}</span>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    addPHCheckIn() {
+        const business = prompt('Business name:');
+        if (!business) return;
+        
+        const summary = prompt('Check-in summary:');
+        
+        if (!this.phVentures) this.phVentures = { businesses: [], team: [], checkIns: [] };
+        if (!this.phVentures.checkIns) this.phVentures.checkIns = [];
+        
+        this.phVentures.checkIns.unshift({
+            id: 'phc-' + Date.now(),
+            business,
+            summary: summary || '',
+            date: new Date().toISOString(),
+            hasPhotos: false
+        });
+        
+        this.saveData();
+        this.renderPHVentures();
+        this.addLogEntry('PH Check-in: ' + business, 'ph-ventures');
+    }
+
+    // ========== WEEKLY REVIEW MODULE ==========
+    
+    renderWeeklyReviews() {
+        const container = document.getElementById('weeklyReviewContent');
+        const previousEl = document.getElementById('previousReviews');
+        
+        if (!this.weeklyReviews || this.weeklyReviews.length === 0) {
+            if (container) container.innerHTML = '<div class="empty-state">Click Generate to create this week\'s review</div>';
+            if (previousEl) previousEl.innerHTML = '<div class="empty-state">No previous reviews</div>';
+            return;
+        }
+        
+        const current = this.weeklyReviews[0];
+        
+        if (container && current) {
+            container.innerHTML = `
+                <div class="weekly-review-card">
+                    <div class="review-header">
+                        <span class="review-week">Week ${current.week}</span>
+                        <span class="review-date">${current.startDate} - ${current.endDate}</span>
+                    </div>
+                    
+                    <div class="review-section">
+                        <h4>🏆 Wins</h4>
+                        <ul>${current.wins.map(w => `<li>${w}</li>`).join('')}</ul>
+                    </div>
+                    
+                    <div class="review-section">
+                        <h4>📊 Project Progress</h4>
+                        ${Object.entries(current.projectsProgress || {}).map(([p, status]) => `
+                            <div class="project-status"><strong>${p}:</strong> ${status}</div>
+                        `).join('')}
+                    </div>
+                    
+                    ${current.blockers?.length ? `
+                    <div class="review-section">
+                        <h4>🚫 Blockers</h4>
+                        <ul>${current.blockers.map(b => `<li>${b}</li>`).join('')}</ul>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="review-section">
+                        <h4>➡️ Next Week Priorities</h4>
+                        <ol>${current.nextWeekPriorities.map(p => `<li>${p}</li>`).join('')}</ol>
+                    </div>
+                    
+                    <div class="review-meta">
+                        <span>Generated: ${this.formatDate(current.generatedAt)}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (previousEl) {
+            const previous = this.weeklyReviews.slice(1);
+            previousEl.innerHTML = previous.map(r => `
+                <div class="previous-review-item">
+                    <span class="review-week">${r.week}</span>
+                    <span class="review-wins">${r.wins?.length || 0} wins</span>
+                    <span class="review-date">${r.startDate}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    generateWeeklyReview() {
+        const now = new Date();
+        const weekStart = new Date(now.getTime() - now.getDay() * 86400000);
+        const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
+        
+        const weekNum = this.getWeekNumber(now);
+        const weekStr = `${now.getFullYear()}-W${weekNum.toString().padStart(2, '0')}`;
+        
+        // Auto-collect data
+        const completedTasks = this.tasks?.filter(t => t.status === 'completed' && t.completed) || [];
+        const wins = completedTasks.slice(0, 5).map(t => t.title);
+        
+        const projectsProgress = {};
+        this.projects?.forEach(p => {
+            projectsProgress[p.name] = `${p.progress}% - ${p.status}`;
+        });
+        
+        const activeDelegations = this.delegations?.filter(d => d.status === 'active') || [];
+        
+        if (!this.weeklyReviews) this.weeklyReviews = [];
+        
+        this.weeklyReviews.unshift({
+            week: weekStr,
+            startDate: weekStart.toISOString().split('T')[0],
+            endDate: weekEnd.toISOString().split('T')[0],
+            wins: wins.length ? wins : ['No major wins logged this week'],
+            projectsProgress,
+            blockers: [],
+            nextWeekPriorities: [],
+            delegationStatus: `${activeDelegations.length} active delegations`,
+            calendarConflicts: null,
+            generatedAt: now.toISOString()
+        });
+        
+        this.saveData();
+        this.renderWeeklyReviews();
+        this.addLogEntry('Weekly review generated for ' + weekStr, 'review');
+    }
+
+    getWeekNumber(date) {
+        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    // ========== ENHANCED RENDER ALL ==========
+    
+    renderAll() {
+        this.renderStatus();
+        this.renderActiveTasks();
+        this.renderTaskList();
+        this.renderProjects();
+        this.renderGoals();
+        this.renderResources();
+        this.renderWorkLog();
+        // New modules
+        this.renderDecisions();
+        this.renderDelegations();
+        this.renderPHVentures();
+        this.renderWeeklyReviews();
+    }
+
+    // ========== ENHANCED LOAD/SAVE ==========
+    
+    loadData() {
+        const saved = localStorage.getItem('jarvisDashboardData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            this.tasks = data.tasks || [];
+            this.projects = data.projects || [];
+            this.goals = data.goals || [];
+            this.resources = data.resources || [];
+            this.workLog = data.workLog || [];
+            this.systemStatus = data.systemStatus || {};
+            // New modules
+            this.decisions = data.decisions || [];
+            this.delegations = data.delegations || [];
+            this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
+            this.weeklyReviews = data.weeklyReviews || [];
+        }
+    }
+
+    saveData() {
+        const data = {
+            tasks: this.tasks,
+            projects: this.projects,
+            goals: this.goals,
+            resources: this.resources,
+            workLog: this.workLog,
+            systemStatus: this.systemStatus,
+            // New modules
+            decisions: this.decisions || [],
+            delegations: this.delegations || [],
+            phVentures: this.phVentures || { businesses: [], team: [], checkIns: [] },
+            weeklyReviews: this.weeklyReviews || []
+        };
+        localStorage.setItem('jarvisDashboardData', JSON.stringify(data));
+        
+        // Also save to server if available
+        fetch('/api/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(() => {});
     }
 }
 

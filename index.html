@@ -13,8 +13,11 @@
     <div class="status-bar">
         <div class="status-left">
             <div class="logo">
-                <span class="logo-icon">◉</span>
+                <img src="assets/brain-logo.png" class="logo-icon" id="jarvisLogo" alt="Jarvis">
                 <span class="logo-text">JARVIS AQULOS</span>
+                <span class="working-indicator" id="workingIndicator" style="display: none;">
+                    <span class="pulse-dot"></span> WORKING
+                </span>
             </div>
             <div class="system-status" id="systemStatus">
                 <span class="status-indicator" id="statusIndicator"></span>
@@ -61,6 +64,23 @@
                 <button class="nav-item" data-section="logs">
                     <span class="nav-icon">◫</span>
                     <span>Work Log</span>
+                </button>
+                <button class="nav-item" data-section="decisions">
+                    <span class="nav-icon">⚖</span>
+                    <span>Decision Log</span>
+                </button>
+                <button class="nav-item" data-section="delegations">
+                    <span class="nav-icon">👤</span>
+                    <span>Delegation</span>
+                    <span class="badge" id="delegationBadge">0</span>
+                </button>
+                <button class="nav-item" data-section="ph-ventures">
+                    <span class="nav-icon">🌏</span>
+                    <span>PH Ventures</span>
+                </button>
+                <button class="nav-item" data-section="weekly-reviews">
+                    <span class="nav-icon">📊</span>
+                    <span>Weekly Review</span>
                 </button>
             </nav>
 
@@ -551,6 +571,109 @@
                                 <span class="log-text">Dashboard initialized</span>
                                 <span class="log-tag">system</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Decision Log Section -->
+            <section id="decisions" class="section">
+                <div class="section-header">
+                    <h1>⚖ Decision Log</h1>
+                    <p class="subtitle">Track decisions, context, and outcomes</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Decisions Made</h2>
+                        <button class="btn-small" onclick="dashboard.addDecision()">+ Add Decision</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="decisionsList" class="decisions-list">
+                            <div class="empty-state">No decisions logged yet</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Delegation Tracker Section -->
+            <section id="delegations" class="section">
+                <div class="section-header">
+                    <h1>👤 Delegation Tracker</h1>
+                    <p class="subtitle">Who owns what, when it's due, and check-in status</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Active Delegations</h2>
+                        <button class="btn-small" onclick="dashboard.addDelegation()">+ New Delegation</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="delegationsList" class="delegations-list">
+                            <div class="empty-state">No active delegations</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PH Ventures Section -->
+            <section id="ph-ventures" class="section">
+                <div class="section-header">
+                    <h1>🌏 PH Ventures Command Center</h1>
+                    <p class="subtitle">Philippines operations: dorm, farm, F&B management</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Business Overview</h2>
+                        <span id="phTime" class="time-badge">--:--</span>
+                    </div>
+                    <div class="panel-content">
+                        <div id="phBusinesses" class="ph-businesses">
+                            <div class="empty-state">Loading PH ventures...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Team & Check-ins</h2>
+                        <button class="btn-small" onclick="dashboard.addPHCheckIn()">+ Add Check-in</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="phCheckIns" class="ph-checkins">
+                            <div class="empty-state">No check-ins yet</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weekly Review Section -->
+            <section id="weekly-reviews" class="section">
+                <div class="section-header">
+                    <h1>📊 Weekly Review</h1>
+                    <p class="subtitle">Auto-generated Friday summary of the week</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Current Week Review</h2>
+                        <button class="btn-small" onclick="dashboard.generateWeeklyReview()">Generate Review</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="weeklyReviewContent" class="weekly-review">
+                            <div class="empty-state">Click Generate to create this week's review</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Previous Reviews</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="previousReviews" class="previous-reviews">
+                            <div class="empty-state">No previous reviews</div>
                         </div>
                     </div>
                 </div>
