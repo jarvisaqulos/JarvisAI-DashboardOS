@@ -438,6 +438,7 @@ class JarvisDashboard {
             this.delegations = data.delegations || [];
             this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
             this.weeklyReviews = data.weeklyReviews || [];
+            this.psePortfolio = data.psePortfolio || null;
             return true; // Data was found and loaded
         }
         return false; // No data found
@@ -456,7 +457,8 @@ class JarvisDashboard {
             decisions: this.decisions || [],
             delegations: this.delegations || [],
             phVentures: this.phVentures || { businesses: [], team: [], checkIns: [] },
-            weeklyReviews: this.weeklyReviews || []
+            weeklyReviews: this.weeklyReviews || [],
+            psePortfolio: this.psePortfolio || null
         };
         localStorage.setItem('jarvisDashboardData', JSON.stringify(data));
     }
