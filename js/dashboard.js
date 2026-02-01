@@ -1320,17 +1320,17 @@ class JarvisDashboard {
     // ========== PSE PORTFOLIO TRACKER ==========
 
     initializePSEPortfolio() {
-        // Placeholder - user needs to input actual holdings
-        // Total should be ₱208,938.42
+        // Kris's actual portfolio from Google Sheets
+        // Total: ~₱208,938.42
         const defaultHoldings = [
-            { symbol: 'SM', name: 'SM Investments', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'AC', name: 'Ayala Corp', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'BDO', name: 'BDO Unibank', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'AP', name: 'Aboitiz Power', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'TEL', name: 'PLDT', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'GLO', name: 'Globe Telecom', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'MER', name: 'Meralco', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 },
-            { symbol: 'JGS', name: 'JG Summit', shares: 0, avgCost: 0, lastPrice: 0, dayChange: 0 }
+            { symbol: 'FILRT', name: 'Filinvest REIT', shares: 3000, avgCost: 3.22, lastPrice: 3.22, dayChange: 0 },
+            { symbol: 'GLO', name: 'Globe Telecom', shares: 20, avgCost: 1608.73, lastPrice: 1608.73, dayChange: 0 },
+            { symbol: 'MBT', name: 'Metrobank', shares: 140, avgCost: 71.96, lastPrice: 71.96, dayChange: 0 },
+            { symbol: 'MREIT', name: 'Megaworld REIT', shares: 700, avgCost: 13.90, lastPrice: 13.90, dayChange: 0 },
+            { symbol: 'MYNLD', name: 'Manny Villar REIT', shares: 3400, avgCost: 15.00, lastPrice: 15.00, dayChange: 0 },
+            { symbol: 'RCR', name: 'Robinsons REIT', shares: 4000, avgCost: 7.32, lastPrice: 7.32, dayChange: 0 },
+            { symbol: 'RRHI', name: 'Robinsons Retail', shares: 700, avgCost: 35.55, lastPrice: 35.55, dayChange: 0 },
+            { symbol: 'TEL', name: 'PLDT', shares: 25, avgCost: 1333.92, lastPrice: 1333.92, dayChange: 0 }
         ];
 
         const defaultWatchlist = [
