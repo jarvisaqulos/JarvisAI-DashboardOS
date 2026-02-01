@@ -85,6 +85,11 @@
                     <span class="nav-icon">📊</span>
                     <span>Weekly Review</span>
                 </button>
+                <button class="nav-item" data-section="pse-portfolio">
+                    <span class="nav-icon">📈</span>
+                    <span>PSE Portfolio</span>
+                    <span class="badge" id="pseBadge" style="display: none;">0</span>
+                </button>
             </nav>
 
             <!-- Quick Actions -->
@@ -698,6 +703,97 @@
                     <div class="panel-content">
                         <div id="previousReviews" class="previous-reviews">
                             <div class="empty-state">No previous reviews</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PSE Portfolio Section -->
+            <section id="pse-portfolio" class="section">
+                <div class="section-header">
+                    <h1>📈 PSE Portfolio Tracker</h1>
+                    <p class="subtitle">Philippine Stock Exchange holdings & performance</p>
+                    <button class="btn-primary" onclick="dashboard.updatePSEPortfolio()">📋 Update Portfolio</button>
+                </div>
+
+                <!-- Portfolio Summary -->
+                <div class="dashboard-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>💰 Portfolio Value</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="portfolio-summary">
+                                <div class="portfolio-value" id="pseTotalValue">₱0.00</div>
+                                <div class="portfolio-change" id="pseTotalChange">+0.00%</div>
+                                <div class="portfolio-day-change" id="pseDayChange">Day: +0.00%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📊 Allocation</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div id="pseAllocation" class="allocation-list">
+                                <div class="empty-state">Loading allocation...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🎯 Top Movers</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div id="pseTopMovers" class="movers-list">
+                                <div class="empty-state">No data</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holdings Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📋 Holdings</h2>
+                        <span class="last-updated" id="pseLastUpdated">Last updated: --</span>
+                    </div>
+                    <div class="panel-content">
+                        <div class="pse-holdings-table">
+                            <table class="data-table" id="pseHoldingsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Stock</th>
+                                        <th>Shares</th>
+                                        <th>Avg Cost</th>
+                                        <th>Last Price</th>
+                                        <th>Market Value</th>
+                                        <th>P/L</th>
+                                        <th>P/L %</th>
+                                        <th>Day Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pseHoldingsBody">
+                                    <tr>
+                                        <td colspan="8" class="empty-state">Loading portfolio...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Watchlist -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>👀 Watchlist</h2>
+                        <button class="btn-small" onclick="dashboard.addPSEWatchlist()">+ Add Stock</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="pseWatchlist" class="watchlist-grid">
+                            <div class="empty-state">No stocks in watchlist</div>
                         </div>
                     </div>
                 </div>

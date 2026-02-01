@@ -43,6 +43,11 @@ class JarvisDashboard {
         // Initialize Jarvis projects
         this.initializeJarvisProjects();
         
+        // Initialize PSE Portfolio
+        if (!this.psePortfolio) {
+            this.initializePSEPortfolio();
+        }
+        
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         this.setStatus('idle');
@@ -759,6 +764,7 @@ class JarvisDashboard {
         this.updateStatusUI();
         this.updateEmailStatus();
         this.updateCalendarStatus();
+        this.renderPSEPortfolio();
     }
 
     renderTasks() {
@@ -1307,6 +1313,233 @@ class JarvisDashboard {
         d.setUTCDate(d.getUTCDate() + 4 - dayNum);
         const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
         return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    // ========== PSE PORTFOLIO TRACKER ==========
+
+    initializePSEPortfolio() {
+        // Initial portfolio based on screenshot provided
+        const defaultHoldings = [
+            { symbol: 'AC', name: 'Ayala Corp', shares: 300, avgCost: 650.00, lastPrice: 650.00, dayChange: 0 },
+            { symbol: 'SM', name: 'SM Investments', shares: 200, avgCost: 875.00, lastPrice: 875.00, dayChange: 0 },
+            { symbol: 'AP', name: 'Aboitiz Power', shares: 4000, avgCost: 35.50, lastPrice: 35.50, dayChange: 0 },
+            { symbol: 'GLO', name: 'Globe Telecom', shares: 100, avgCost: 1950.00, lastPrice: 1950.00, dayChange: 0 },
+            { symbol: 'TEL', name: 'PLDT', shares: 150, avgCost: 1425.00, lastPrice: 1425.00, dayChange: 0 },
+            { symbol: 'DMC', name: 'DMCI Holdings', shares: 1000, avgCost: 12.80, lastPrice: 12.80, dayChange: 0 },
+            { symbol: 'BDO', name: 'BDO Unibank', shares: 200, avgCost: 142.00, lastPrice: 142.00, dayChange: 0 },
+            { symbol: 'JGS', name: 'JG Summit', shares: 500, avgCost: 68.50, lastPrice: 68.50, dayChange: 0 },
+            { symbol: 'MPI', name: 'Metro Pacific', shares: 5000, avgCost: 5.20, lastPrice: 5.20, dayChange: 0 },
+            { symbol: 'SECB', name: 'Security Bank', shares: 100, avgCost: 128.00, lastPrice: 128.00, dayChange: 0 },
+            { symbol: 'ACEN', name: 'AC Energy', shares: 10000, avgCost: 6.85, lastPrice: 6.85, dayChange: 0 },
+            { symbol: 'PGOLD', name: 'Puregold', shares: 300, avgCost: 32.40, lastPrice: 32.40, dayChange: 0 },
+            { symbol: 'CNVRG', name: 'Converge', shares: 2000, avgCost: 14.20, lastPrice: 14.20, dayChange: 0 }
+        ];
+
+        const defaultWatchlist = [
+            { symbol: 'ALI', name: 'Ayala Land', lastPrice: 28.50, dayChange: 0.5 },
+            { symbol: 'SMPH', name: 'SM Prime', lastPrice: 36.20, dayChange: -0.3 },
+            { symbol: 'MER', name: 'Meralco', lastPrice: 295.00, dayChange: 1.2 }
+        ];
+
+        this.psePortfolio = {
+            holdings: defaultHoldings,
+            watchlist: defaultWatchlist,
+            lastUpdated: new Date().toISOString(),
+            cash: 0 // Cash position in PHP
+        };
+
+        this.saveData();
+        this.addLogEntry('PSE Portfolio initialized with ' + defaultHoldings.length + ' holdings', 'system');
+    }
+
+    renderPSEPortfolio() {
+        if (!this.psePortfolio) {
+            this.initializePSEPortfolio();
+        }
+
+        const holdings = this.psePortfolio.holdings || [];
+        const watchlist = this.psePortfolio.watchlist || [];
+
+        // Calculate totals
+        let totalValue = 0;
+        let totalCost = 0;
+        let totalDayChange = 0;
+
+        holdings.forEach(h => {
+            const marketValue = h.shares * h.lastPrice;
+            const costBasis = h.shares * h.avgCost;
+            totalValue += marketValue;
+            totalCost += costBasis;
+            totalDayChange += h.shares * h.dayChange;
+        });
+
+        const totalChange = totalValue - totalCost;
+        const totalChangePct = totalCost > 0 ? (totalChange / totalCost) * 100 : 0;
+        const dayChangePct = totalValue > 0 ? (totalDayChange / totalValue) * 100 : 0;
+
+        // Update summary
+        const totalValueEl = document.getElementById('pseTotalValue');
+        const totalChangeEl = document.getElementById('pseTotalChange');
+        const dayChangeEl = document.getElementById('pseDayChange');
+        const lastUpdatedEl = document.getElementById('pseLastUpdated');
+
+        if (totalValueEl) totalValueEl.textContent = '₱' + this.formatNumber(totalValue);
+        if (totalChangeEl) {
+            totalChangeEl.textContent = (totalChange >= 0 ? '+' : '') + totalChange.toFixed(2) + ' (' + (totalChangePct >= 0 ? '+' : '') + totalChangePct.toFixed(2) + '%)';
+            totalChangeEl.className = 'portfolio-change ' + (totalChange >= 0 ? 'positive' : 'negative');
+        }
+        if (dayChangeEl) {
+            dayChangeEl.textContent = 'Day: ' + (totalDayChange >= 0 ? '+' : '') + totalDayChange.toFixed(2) + ' (' + (dayChangePct >= 0 ? '+' : '') + dayChangePct.toFixed(2) + '%)';
+            dayChangeEl.className = 'portfolio-day-change ' + (totalDayChange >= 0 ? 'positive' : 'negative');
+        }
+        if (lastUpdatedEl) lastUpdatedEl.textContent = 'Last updated: ' + this.formatDate(this.psePortfolio.lastUpdated);
+
+        // Render holdings table
+        const holdingsBody = document.getElementById('pseHoldingsBody');
+        if (holdingsBody) {
+            if (holdings.length === 0) {
+                holdingsBody.innerHTML = '<tr><td colspan="8" class="empty-state">No holdings</td></tr>';
+            } else {
+                holdingsBody.innerHTML = holdings.map(h => {
+                    const marketValue = h.shares * h.lastPrice;
+                    const costBasis = h.shares * h.avgCost;
+                    const pl = marketValue - costBasis;
+                    const plPct = costBasis > 0 ? (pl / costBasis) * 100 : 0;
+                    const dayChgPct = h.lastPrice > 0 ? (h.dayChange / h.lastPrice) * 100 : 0;
+
+                    return `
+                        <tr>
+                            <td><strong>${h.symbol}</strong><br><small>${h.name}</small></td>
+                            <td>${this.formatNumber(h.shares)}</td>
+                            <td>₱${h.avgCost.toFixed(2)}</td>
+                            <td>₱${h.lastPrice.toFixed(2)}</td>
+                            <td>₱${this.formatNumber(marketValue)}</td>
+                            <td class="${pl >= 0 ? 'positive' : 'negative'}">₱${pl.toFixed(2)}</td>
+                            <td class="${plPct >= 0 ? 'positive' : 'negative'}">${plPct >= 0 ? '+' : ''}${plPct.toFixed(2)}%</td>
+                            <td class="${h.dayChange >= 0 ? 'positive' : 'negative'}">${h.dayChange >= 0 ? '+' : ''}${dayChgPct.toFixed(2)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Render allocation (by symbol for now, could be by sector later)
+        const allocationEl = document.getElementById('pseAllocation');
+        if (allocationEl) {
+            const sortedByValue = [...holdings].sort((a, b) => (b.shares * b.lastPrice) - (a.shares * a.lastPrice));
+            const topHoldings = sortedByValue.slice(0, 5);
+
+            allocationEl.innerHTML = topHoldings.map(h => {
+                const value = h.shares * h.lastPrice;
+                const pct = totalValue > 0 ? (value / totalValue) * 100 : 0;
+                return `
+                    <div class="allocation-item">
+                        <span class="allocation-symbol">${h.symbol}</span>
+                        <div class="allocation-bar">
+                            <div class="allocation-fill" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="allocation-pct">${pct.toFixed(1)}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render top movers
+        const moversEl = document.getElementById('pseTopMovers');
+        if (moversEl) {
+            const sortedByDayChange = [...holdings].sort((a, b) => {
+                const aPct = a.lastPrice > 0 ? a.dayChange / a.lastPrice : 0;
+                const bPct = b.lastPrice > 0 ? b.dayChange / b.lastPrice : 0;
+                return bPct - aPct;
+            });
+            const topMovers = sortedByDayChange.slice(0, 3);
+
+            moversEl.innerHTML = topMovers.map(h => {
+                const dayChgPct = h.lastPrice > 0 ? (h.dayChange / h.lastPrice) * 100 : 0;
+                return `
+                    <div class="mover-item ${h.dayChange >= 0 ? 'up' : 'down'}">
+                        <span class="mover-symbol">${h.symbol}</span>
+                        <span class="mover-change">${dayChgPct >= 0 ? '+' : ''}${dayChgPct.toFixed(2)}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render watchlist
+        const watchlistEl = document.getElementById('pseWatchlist');
+        if (watchlistEl) {
+            if (watchlist.length === 0) {
+                watchlistEl.innerHTML = '<div class="empty-state">No stocks in watchlist</div>';
+            } else {
+                watchlistEl.innerHTML = watchlist.map(w => {
+                    const dayChgPct = w.lastPrice > 0 ? (w.dayChange / w.lastPrice) * 100 : 0;
+                    return `
+                        <div class="watchlist-item">
+                            <div class="watchlist-info">
+                                <span class="watchlist-symbol">${w.symbol}</span>
+                                <span class="watchlist-name">${w.name}</span>
+                            </div>
+                            <div class="watchlist-price">
+                                <span class="price">₱${w.lastPrice.toFixed(2)}</span>
+                                <span class="change ${w.dayChange >= 0 ? 'positive' : 'negative'}">${dayChgPct >= 0 ? '+' : ''}${dayChgPct.toFixed(2)}%</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Update badge
+        const badge = document.getElementById('pseBadge');
+        if (badge) {
+            badge.textContent = holdings.length;
+            badge.style.display = holdings.length > 0 ? 'inline' : 'none';
+        }
+    }
+
+    updatePSEPortfolio() {
+        // Open a prompt to paste portfolio data
+        const portfolioData = prompt('Paste your portfolio data (or type "reset" to reload defaults):');
+        if (!portfolioData) return;
+
+        if (portfolioData.toLowerCase() === 'reset') {
+            this.initializePSEPortfolio();
+            this.renderPSEPortfolio();
+            return;
+        }
+
+        // Simple parsing - you can enhance this based on format
+        this.addLogEntry('Portfolio update requested - manual entry', 'pse');
+        alert('Portfolio update feature: Send me your portfolio screenshot or paste the data and I\'ll parse it!');
+    }
+
+    addPSEWatchlist() {
+        const symbol = prompt('Enter stock symbol (e.g., ALI, SMPH):');
+        if (!symbol) return;
+
+        const name = prompt('Enter company name:');
+        if (!this.psePortfolio) this.initializePSEPortfolio();
+        if (!this.psePortfolio.watchlist) this.psePortfolio.watchlist = [];
+
+        this.psePortfolio.watchlist.push({
+            symbol: symbol.toUpperCase(),
+            name: name || symbol.toUpperCase(),
+            lastPrice: 0,
+            dayChange: 0
+        });
+
+        this.saveData();
+        this.renderPSEPortfolio();
+        this.addLogEntry('Added to watchlist: ' + symbol.toUpperCase(), 'pse');
+    }
+
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(2) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(2) + 'K';
+        }
+        return num.toFixed(2);
     }
 }
 
