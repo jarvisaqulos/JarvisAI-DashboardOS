@@ -73,3 +73,22 @@
 .pl-bar.negative {
     background: var(--accent-red);
 }
+
+/* Reset Button */
+.reset-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 12px;
+}
+
+.reset-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}

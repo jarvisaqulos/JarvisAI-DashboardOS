@@ -59,6 +59,13 @@ class JarvisDashboard {
         location.reload();
     }
 
+    // Confirm reset with user
+    confirmReset() {
+        if (confirm('⚠️ Reset all dashboard data?\n\nThis will clear:\n- All tasks\n- Projects\n- Portfolio data\n- Work log\n\nClick OK to reset everything.')) {
+            this.forceReset();
+        }
+    }
+
     // Initialize default tasks for Jarvis (small, 1-3 step items)
     initializeDefaultTasks() {
         const defaultTasks = [
@@ -190,6 +197,30 @@ class JarvisDashboard {
                 files: [],
                 tools: ['AI Tools', 'Research', 'Documentation'],
                 links: [],
+                created: new Date().toISOString()
+            },
+            {
+                id: 'proj-pse-portfolio',
+                name: 'PSE Portfolio Tracker',
+                description: 'Build comprehensive Philippine Stock Exchange portfolio tracker with real-time P/L, allocation charts, and holdings management',
+                status: 'completed',
+                icon: '📈',
+                tasks: 8,
+                deliverables: [
+                    'Portfolio data structure',
+                    'Holdings table with P/L calculations', 
+                    'Donut allocation chart',
+                    'Visual P/L indicators with progress bars',
+                    'Watchlist functionality',
+                    'Integration with Google Sheets',
+                    'Reset/Clear data functionality',
+                    'Responsive dashboard UI'
+                ],
+                files: ['/home/kjcardona/.openclaw/workspace/jarvis-dashboard/js/dashboard.js'],
+                tools: ['JavaScript', 'Canvas API', 'Google Sheets API', 'LocalStorage'],
+                links: [
+                    { name: 'Portfolio Sheet', url: 'https://docs.google.com/spreadsheets/d/1_aM_lUK1Agt5Oh3mZcoI7jujxKEG9wox3h6qaUOnNNs/edit' }
+                ],
                 created: new Date().toISOString()
             }
         ];
