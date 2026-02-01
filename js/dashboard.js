@@ -565,12 +565,15 @@ class JarvisDashboard {
         
         container.innerHTML = this.emails.map(email => `
             <div class="email-item ${email.unread ? 'unread' : ''}" data-id="${email.id}">
-                <div class="email-sender">${email.from}</div>
-                <div class="email-subject">${email.subject}</div>
-                <div class="email-meta">
-                    <span class="email-time">${this.formatTime(email.time)}</span>
-                    ${email.unread ? '<span class="unread-badge">NEW</span>' : ''}
+                <div class="email-content">
+                    <div class="email-sender">${email.from}</div>
+                    <div class="email-subject">${email.subject}</div>
+                    <div class="email-meta">
+                        <span class="email-time">${this.formatTime(email.time)}</span>
+                        ${email.unread ? '<span class="unread-badge">NEW</span>' : ''}
+                    </div>
                 </div>
+                ${email.unread ? `<button class="btn-small mark-read-btn" onclick="dashboard.markEmailRead('${email.id}')">✓ Read</button>` : ''}
             </div>
         `).join('');
         
@@ -1785,6 +1788,20 @@ class JarvisDashboard {
             return (num / 1000).toFixed(2) + 'K';
         }
         return num.toFixed(2);
+    }
+
+    // Mark email as read
+    markEmailRead(emailId) {
+        const email = this.emails.find(e => e.id === emailId);
+        if (email) {
+            email.unread = false;
+            this.saveData();
+            this.renderEmails();
+            this.addLogEntry(`Marked email as read: ${email.subject}`, 'email');
+            
+            // In production, this would call Gmail API to actually mark as read
+            console.log(`Marked as read (dashboard only): ${emailId}`);
+        }
     }
 }
 
