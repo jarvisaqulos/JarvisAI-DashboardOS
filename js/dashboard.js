@@ -1320,21 +1320,16 @@ class JarvisDashboard {
     // ========== PSE PORTFOLIO TRACKER ==========
 
     initializePSEPortfolio() {
-        // Initial portfolio based on screenshot provided
+        // Kris's actual portfolio - 8 holdings
         const defaultHoldings = [
-            { symbol: 'AC', name: 'Ayala Corp', shares: 300, avgCost: 650.00, lastPrice: 650.00, dayChange: 0 },
-            { symbol: 'SM', name: 'SM Investments', shares: 200, avgCost: 875.00, lastPrice: 875.00, dayChange: 0 },
-            { symbol: 'AP', name: 'Aboitiz Power', shares: 4000, avgCost: 35.50, lastPrice: 35.50, dayChange: 0 },
-            { symbol: 'GLO', name: 'Globe Telecom', shares: 100, avgCost: 1950.00, lastPrice: 1950.00, dayChange: 0 },
-            { symbol: 'TEL', name: 'PLDT', shares: 150, avgCost: 1425.00, lastPrice: 1425.00, dayChange: 0 },
-            { symbol: 'DMC', name: 'DMCI Holdings', shares: 1000, avgCost: 12.80, lastPrice: 12.80, dayChange: 0 },
-            { symbol: 'BDO', name: 'BDO Unibank', shares: 200, avgCost: 142.00, lastPrice: 142.00, dayChange: 0 },
-            { symbol: 'JGS', name: 'JG Summit', shares: 500, avgCost: 68.50, lastPrice: 68.50, dayChange: 0 },
-            { symbol: 'MPI', name: 'Metro Pacific', shares: 5000, avgCost: 5.20, lastPrice: 5.20, dayChange: 0 },
-            { symbol: 'SECB', name: 'Security Bank', shares: 100, avgCost: 128.00, lastPrice: 128.00, dayChange: 0 },
-            { symbol: 'ACEN', name: 'AC Energy', shares: 10000, avgCost: 6.85, lastPrice: 6.85, dayChange: 0 },
-            { symbol: 'PGOLD', name: 'Puregold', shares: 300, avgCost: 32.40, lastPrice: 32.40, dayChange: 0 },
-            { symbol: 'CNVRG', name: 'Converge', shares: 2000, avgCost: 14.20, lastPrice: 14.20, dayChange: 0 }
+            { symbol: 'SM', name: 'SM Investments', shares: 100, avgCost: 855.00, lastPrice: 875.00, dayChange: 0 },
+            { symbol: 'AC', name: 'Ayala Corp', shares: 120, avgCost: 625.50, lastPrice: 650.00, dayChange: 0 },
+            { symbol: 'BDO', name: 'BDO Unibank', shares: 300, avgCost: 138.20, lastPrice: 142.00, dayChange: 0 },
+            { symbol: 'AP', name: 'Aboitiz Power', shares: 2000, avgCost: 34.80, lastPrice: 35.50, dayChange: 0 },
+            { symbol: 'TEL', name: 'PLDT', shares: 80, avgCost: 1380.00, lastPrice: 1425.00, dayChange: 0 },
+            { symbol: 'GLO', name: 'Globe Telecom', shares: 50, avgCost: 1920.00, lastPrice: 1950.00, dayChange: 0 },
+            { symbol: 'MER', name: 'Meralco', shares: 150, avgCost: 285.00, lastPrice: 295.00, dayChange: 0 },
+            { symbol: 'JGS', name: 'JG Summit', shares: 400, avgCost: 66.00, lastPrice: 68.50, dayChange: 0 }
         ];
 
         const defaultWatchlist = [
