@@ -29,33 +29,20 @@ class JarvisDashboard {
     }
 
     init() {
-        console.log('Dashboard init started');
-        
-        // FORCE RESET: Always clear and reload tasks on init (temporary for debugging)
-        console.log('Clearing localStorage and forcing task reload...');
-        localStorage.removeItem('jarvisDashboardData');
-        
         this.loadData();
-        console.log('After loadData, tasks length:', this.tasks.length);
-        
         this.setupEventListeners();
         this.startClock();
         this.startEmailHeartbeat();
         this.startCalendarHeartbeat();
         
-        // ALWAYS initialize default tasks
-        console.log('Initializing default tasks...');
-        this.initializeDefaultTasks();
-        
-        console.log('After init, tasks:', this.tasks.length);
-        console.log('Task 1:', this.tasks[0]);
+        // Initialize with default tasks if empty
+        if (this.tasks.length === 0) {
+            this.initializeDefaultTasks();
+        }
         
         this.renderAll();
-        this.addLogEntry('Dashboard initialized with ' + this.tasks.length + ' tasks', 'system');
-        
+        this.addLogEntry('Dashboard initialized', 'system');
         this.setStatus('idle');
-        
-        console.log('🤖 Jarvis Aqulos Dashboard initialized');
     }
 
     // Force reset all data
@@ -166,9 +153,7 @@ class JarvisDashboard {
         ];
         
         this.tasks = defaultTasks;
-        console.log('Default tasks initialized:', this.tasks.length, 'tasks');
         this.saveData();
-        console.log('Saved to localStorage');
         this.addLogEntry('Initialized with ' + defaultTasks.length + ' default tasks', 'system');
     }
 
@@ -739,19 +724,14 @@ class JarvisDashboard {
         const pendingFull = document.getElementById('pendingTasksFull');
         const completedFull = document.getElementById('completedTasksFull');
         
-        console.log('renderTasks called, this.tasks:', this.tasks);
-        
         // Ensure tasks array exists
         if (!this.tasks || !Array.isArray(this.tasks)) {
-            console.log('Tasks array is empty or invalid');
             this.tasks = [];
         }
         
         const active = this.tasks.filter(t => t.status === 'active');
         const pending = this.tasks.filter(t => t.status === 'pending');
         const completed = this.tasks.filter(t => t.status === 'completed');
-        
-        console.log('Active:', active.length, 'Pending:', pending.length, 'Completed:', completed.length);
         
         // Update counts
         document.getElementById('taskBadge').textContent = active.length;
