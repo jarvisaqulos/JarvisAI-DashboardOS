@@ -22,7 +22,10 @@ class JarvisDashboard {
     }
 
     init() {
+        console.log('Dashboard init started');
         const hadExistingData = this.loadData();
+        console.log('loadData returned:', hadExistingData, 'tasks length:', this.tasks.length);
+        
         this.setupEventListeners();
         this.startClock();
         this.startEmailHeartbeat(); // Start email checking
@@ -30,9 +33,11 @@ class JarvisDashboard {
         
         // Initialize with default tasks if empty or no existing data
         if (this.tasks.length === 0) {
+            console.log('No tasks found, initializing defaults...');
             this.initializeDefaultTasks();
         }
         
+        console.log('Before renderAll, tasks:', this.tasks.length);
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         
@@ -144,7 +149,9 @@ class JarvisDashboard {
         ];
         
         this.tasks = defaultTasks;
+        console.log('Default tasks initialized:', this.tasks.length, 'tasks');
         this.saveData();
+        console.log('Saved to localStorage');
         this.addLogEntry('Initialized with ' + defaultTasks.length + ' default tasks', 'system');
     }
 
@@ -715,9 +722,19 @@ class JarvisDashboard {
         const pendingFull = document.getElementById('pendingTasksFull');
         const completedFull = document.getElementById('completedTasksFull');
         
+        console.log('renderTasks called, this.tasks:', this.tasks);
+        
+        // Ensure tasks array exists
+        if (!this.tasks || !Array.isArray(this.tasks)) {
+            console.log('Tasks array is empty or invalid');
+            this.tasks = [];
+        }
+        
         const active = this.tasks.filter(t => t.status === 'active');
         const pending = this.tasks.filter(t => t.status === 'pending');
         const completed = this.tasks.filter(t => t.status === 'completed');
+        
+        console.log('Active:', active.length, 'Pending:', pending.length, 'Completed:', completed.length);
         
         // Update counts
         document.getElementById('taskBadge').textContent = active.length;
