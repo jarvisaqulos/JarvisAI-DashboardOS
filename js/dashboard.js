@@ -1404,17 +1404,32 @@ class JarvisDashboard {
                     const pl = marketValue - costBasis;
                     const plPct = costBasis > 0 ? (pl / costBasis) * 100 : 0;
                     const dayChgPct = h.lastPrice > 0 ? (h.dayChange / h.lastPrice) * 100 : 0;
+                    const plBarWidth = Math.min(Math.abs(plPct), 100);
 
                     return `
                         <tr>
-                            <td><strong>${h.symbol}</strong><br><small>${h.name}</small></td>
+                            <td>
+                                <strong>${h.symbol}</strong><br>
+                                <small>${h.name}</small>
+                            </td>
                             <td>${this.formatNumber(h.shares)}</td>
                             <td>₱${h.avgCost.toFixed(2)}</td>
                             <td>₱${h.lastPrice.toFixed(2)}</td>
                             <td>₱${this.formatNumber(marketValue)}</td>
-                            <td class="${pl >= 0 ? 'positive' : 'negative'}">₱${pl.toFixed(2)}</td>
-                            <td class="${plPct >= 0 ? 'positive' : 'negative'}">${plPct >= 0 ? '+' : ''}${plPct.toFixed(2)}%</td>
-                            <td class="${h.dayChange >= 0 ? 'positive' : 'negative'}">${h.dayChange >= 0 ? '+' : ''}${dayChgPct.toFixed(2)}%</td>
+                            <td class="${pl >= 0 ? 'positive' : 'negative'}">
+                                <span class="pl-indicator ${pl >= 0 ? 'positive' : 'negative'}">
+                                    ${pl >= 0 ? '▲' : '▼'} ₱${Math.abs(pl).toFixed(2)}
+                                </span>
+                                <div class="pl-bar-container">
+                                    <div class="pl-bar ${pl >= 0 ? 'positive' : 'negative'}" style="width: ${plBarWidth}%"></div>
+                                </div>
+                            </td>
+                            <td class="${plPct >= 0 ? 'positive' : 'negative'}">
+                                <strong>${plPct >= 0 ? '+' : ''}${plPct.toFixed(2)}%</strong>
+                            </td>
+                            <td class="${h.dayChange >= 0 ? 'positive' : 'negative'}">
+                                ${h.dayChange >= 0 ? '+' : ''}${dayChgPct.toFixed(2)}%
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -1487,12 +1502,74 @@ class JarvisDashboard {
             }
         }
 
+        // Draw pie chart
+        this.drawPSEPieChart(holdings, totalValue);
+
         // Update badge
         const badge = document.getElementById('pseBadge');
         if (badge) {
             badge.textContent = holdings.length;
             badge.style.display = holdings.length > 0 ? 'inline' : 'none';
         }
+    }
+
+    drawPSEPieChart(holdings, totalValue) {
+        const canvas = document.getElementById('psePieChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 10;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Colors for each slice
+        const colors = [
+            '#00d26a', '#2196f3', '#ffc107', '#f44336', 
+            '#9c27b0', '#00bcd4', '#ff9800', '#4caf50'
+        ];
+        
+        let currentAngle = -Math.PI / 2; // Start at top
+        
+        holdings.forEach((h, index) => {
+            const value = h.shares * h.lastPrice;
+            const percentage = totalValue > 0 ? value / totalValue : 0;
+            const sliceAngle = percentage * 2 * Math.PI;
+            
+            // Draw slice
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = colors[index % colors.length];
+            ctx.fill();
+            
+            // Draw border
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            currentAngle += sliceAngle;
+        });
+        
+        // Draw center hole (donut style)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fill();
+        
+        // Draw total in center
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('₱' + this.formatNumber(totalValue), centerX, centerY - 8);
+        
+        ctx.fillStyle = '#666666';
+        ctx.font = '10px Inter';
+        ctx.fillText('Total Value', centerX, centerY + 10);
     }
 
     updatePSEPortfolio() {
