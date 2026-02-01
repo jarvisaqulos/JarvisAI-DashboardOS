@@ -365,7 +365,7 @@ class JarvisDashboard {
 
     // Data Management
     loadData() {
-        const saved = localStorage.getItem('jarvisDashboard');
+        const saved = localStorage.getItem('jarvisDashboardData');
         if (saved) {
             const data = JSON.parse(saved);
             this.tasks = data.tasks || [];
@@ -376,6 +376,11 @@ class JarvisDashboard {
             this.lastEmailCheck = data.lastEmailCheck ? new Date(data.lastEmailCheck) : null;
             this.events = data.events || [];
             this.lastCalendarCheck = data.lastCalendarCheck ? new Date(data.lastCalendarCheck) : null;
+            // New modules
+            this.decisions = data.decisions || [];
+            this.delegations = data.delegations || [];
+            this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
+            this.weeklyReviews = data.weeklyReviews || [];
         }
         
         // Load initial projects if none exist
@@ -393,9 +398,13 @@ class JarvisDashboard {
             emails: this.emails,
             lastEmailCheck: this.lastEmailCheck,
             events: this.events,
-            lastCalendarCheck: this.lastCalendarCheck
+            lastCalendarCheck: this.lastCalendarCheck,
+            decisions: this.decisions || [],
+            delegations: this.delegations || [],
+            phVentures: this.phVentures || { businesses: [], team: [], checkIns: [] },
+            weeklyReviews: this.weeklyReviews || []
         };
-        localStorage.setItem('jarvisDashboard', JSON.stringify(data));
+        localStorage.setItem('jarvisDashboardData', JSON.stringify(data));
     }
 
     initializeDefaultProjects() {
@@ -1263,49 +1272,6 @@ class JarvisDashboard {
         this.renderWeeklyReviews();
     }
 
-    // ========== ENHANCED LOAD/SAVE ==========
-    
-    loadData() {
-        const saved = localStorage.getItem('jarvisDashboardData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            this.tasks = data.tasks || [];
-            this.projects = data.projects || [];
-            this.goals = data.goals || [];
-            this.resources = data.resources || [];
-            this.workLog = data.workLog || [];
-            this.systemStatus = data.systemStatus || {};
-            // New modules
-            this.decisions = data.decisions || [];
-            this.delegations = data.delegations || [];
-            this.phVentures = data.phVentures || { businesses: [], team: [], checkIns: [] };
-            this.weeklyReviews = data.weeklyReviews || [];
-        }
-    }
-
-    saveData() {
-        const data = {
-            tasks: this.tasks,
-            projects: this.projects,
-            goals: this.goals,
-            resources: this.resources,
-            workLog: this.workLog,
-            systemStatus: this.systemStatus,
-            // New modules
-            decisions: this.decisions || [],
-            delegations: this.delegations || [],
-            phVentures: this.phVentures || { businesses: [], team: [], checkIns: [] },
-            weeklyReviews: this.weeklyReviews || []
-        };
-        localStorage.setItem('jarvisDashboardData', JSON.stringify(data));
-        
-        // Also save to server if available
-        fetch('/api/data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).catch(() => {});
-    }
 }
 
 // Initialize dashboard
