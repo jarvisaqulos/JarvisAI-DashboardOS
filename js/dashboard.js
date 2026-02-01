@@ -40,6 +40,9 @@ class JarvisDashboard {
             this.initializeDefaultTasks();
         }
         
+        // Initialize Jarvis projects
+        this.initializeJarvisProjects();
+        
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         this.setStatus('idle');
@@ -51,99 +54,51 @@ class JarvisDashboard {
         location.reload();
     }
 
-    // Initialize default tasks for Jarvis
+    // Initialize default tasks for Jarvis (small, 1-3 step items)
     initializeDefaultTasks() {
         const defaultTasks = [
             {
                 id: 'task-001',
-                name: 'Build Jarvis Dashboard v2.0',
-                description: 'Create comprehensive dashboard with Task Engine, Decision Log, Delegation Tracker, PH Ventures, Weekly Review modules',
+                name: 'Check Gmail inbox',
+                description: 'Review unread emails, flag urgent items, draft responses if needed',
                 priority: 'high',
                 status: 'active',
                 project: '',
                 assignee: 'jarvis',
                 assignedBy: 'kris',
-                created: new Date(Date.now() - 2 * 86400000).toISOString(),
+                created: new Date().toISOString(),
                 completed: null
             },
             {
                 id: 'task-002',
-                name: 'Set up X (Twitter) monitoring system',
-                description: 'Create watchlist, follow key accounts, set up daily cron job for trend monitoring',
-                priority: 'high',
-                status: 'completed',
+                name: 'Generate X daily trend brief',
+                description: 'Review followed accounts, extract 3-5 key insights, post brief',
+                priority: 'medium',
+                status: 'pending',
                 project: '',
                 assignee: 'jarvis',
                 assignedBy: 'kris',
-                created: new Date(Date.now() - 1 * 86400000).toISOString(),
-                completed: new Date().toISOString()
+                created: new Date().toISOString(),
+                completed: null
             },
             {
                 id: 'task-003',
-                name: 'Update X profile @JAqulos67857',
-                description: 'Update bio with entrepreneurship focus, follow 60+ accounts, set up daily monitoring',
-                priority: 'high',
-                status: 'completed',
+                name: 'Check calendar for upcoming meetings',
+                description: 'Review next 24 hours, send reminders for meetings <2h away',
+                priority: 'medium',
+                status: 'active',
                 project: '',
                 assignee: 'jarvis',
                 assignedBy: 'kris',
-                created: new Date(Date.now() - 1 * 86400000).toISOString(),
-                completed: new Date().toISOString()
+                created: new Date().toISOString(),
+                completed: null
             },
             {
                 id: 'task-004',
-                name: 'Generate daily X trend briefs',
-                description: 'Monitor followed accounts, extract key insights, generate 3-5 point briefs for restaurant marketing, AI, entrepreneurship trends',
-                priority: 'medium',
-                status: 'pending',
-                project: '',
-                assignee: 'jarvis',
-                assignedBy: 'kris',
-                created: new Date().toISOString(),
-                completed: null
-            },
-            {
-                id: 'task-005',
-                name: 'Heartbeat monitoring (email, calendar, tasks)',
-                description: 'Check emails every 30min, calendar every hour, task status updates, proactive alerts for urgent items',
-                priority: 'medium',
-                status: 'active',
-                project: '',
-                assignee: 'jarvis',
-                assignedBy: 'kris',
-                created: new Date(Date.now() - 2 * 86400000).toISOString(),
-                completed: null
-            },
-            {
-                id: 'task-006',
-                name: 'Weekly dashboard review generation',
-                description: 'Auto-compile weekly summary every Friday: wins, project progress, blockers, next week priorities',
-                priority: 'medium',
-                status: 'pending',
-                project: '',
-                assignee: 'jarvis',
-                assignedBy: 'kris',
-                created: new Date().toISOString(),
-                completed: null
-            },
-            {
-                id: 'task-007',
-                name: 'PH Ventures check-ins',
-                description: 'Weekly async check-ins with Philippines team: dorm operations, farm progress, F&B updates',
-                priority: 'medium',
-                status: 'pending',
-                project: 'ph-ventures',
-                assignee: 'jarvis',
-                assignedBy: 'kris',
-                created: new Date().toISOString(),
-                completed: null
-            },
-            {
-                id: 'task-008',
-                name: 'Decision logging and tracking',
-                description: 'Log all strategic decisions with context, alternatives considered, and review dates',
+                name: 'Update work log',
+                description: 'Log all activities and decisions from this session',
                 priority: 'low',
-                status: 'active',
+                status: 'pending',
                 project: '',
                 assignee: 'jarvis',
                 assignedBy: 'kris',
@@ -155,6 +110,94 @@ class JarvisDashboard {
         this.tasks = defaultTasks;
         this.saveData();
         this.addLogEntry('Initialized with ' + defaultTasks.length + ' default tasks', 'system');
+    }
+
+    // Initialize Jarvis projects (big initiatives)
+    initializeJarvisProjects() {
+        const jarvisProjects = [
+            {
+                id: 'proj-dashboard',
+                name: 'Jarvis Dashboard v2.0',
+                description: 'Build comprehensive operating system with Task Engine, Decision Log, Delegation Tracker, PH Ventures, Weekly Review modules',
+                status: 'active',
+                icon: '🤖',
+                tasks: 4,
+                deliverables: ['Task Engine', 'Decision Log', 'Delegation Tracker', 'PH Ventures Module', 'Weekly Review Generator'],
+                files: [],
+                tools: ['HTML/CSS/JS', 'Node.js', 'SQLite'],
+                links: [
+                    { name: 'GitHub', url: 'https://github.com/jarvisaqulos/JarvisAI-DashboardOS' }
+                ],
+                created: new Date(Date.now() - 2 * 86400000).toISOString()
+            },
+            {
+                id: 'proj-moltbook',
+                name: 'Moltbook Agent Setup',
+                description: 'Create and verify Moltbook profile, establish presence in AI agent community, engage with other agents',
+                status: 'completed',
+                icon: '🤖',
+                tasks: 3,
+                deliverables: ['Profile Created', 'Account Verified', 'First Post'],
+                files: [],
+                tools: ['Moltbook API'],
+                links: [
+                    { name: 'Profile', url: 'https://moltbook.com/u/JarvisAqulos' }
+                ],
+                created: new Date(Date.now() - 3 * 86400000).toISOString()
+            },
+            {
+                id: 'proj-x-monitoring',
+                name: 'X (Twitter) Monitoring System',
+                description: 'Set up automated monitoring of 60+ accounts across restaurant marketing, AI, entrepreneurship, and PH business',
+                status: 'completed',
+                icon: '𝕏',
+                tasks: 5,
+                deliverables: ['Watchlist Created', 'Profile Updated', '60+ Accounts Following', 'Daily Cron Job', 'Trend Briefs'],
+                files: ['/home/kjcardona/.openclaw/workspace/X_WATCHLIST.md'],
+                tools: ['X Platform', 'OpenClaw Browser'],
+                links: [
+                    { name: 'Profile', url: 'https://x.com/JAqulos67857' },
+                    { name: 'Watchlist', url: '#' }
+                ],
+                created: new Date(Date.now() - 1 * 86400000).toISOString()
+            },
+            {
+                id: 'proj-thinknlocal',
+                name: 'ThinkNLocal Growth Support',
+                description: 'Support scaling to 1,000 local partners through marketing insights, competitive intelligence, and strategic recommendations',
+                status: 'active',
+                icon: '🏪',
+                tasks: 2,
+                deliverables: ['Market Research', 'Competitor Analysis', 'Growth Recommendations'],
+                files: [],
+                tools: ['X Monitoring', 'Web Search', 'Analytics'],
+                links: [],
+                created: new Date().toISOString()
+            },
+            {
+                id: 'proj-aqulos',
+                name: 'AQULOS Agency Rebuild',
+                description: 'Support rebuild of AI + automation-powered growth agency with research, content, and systems',
+                status: 'active',
+                icon: '🚀',
+                tasks: 3,
+                deliverables: ['Service Research', 'Competitive Analysis', 'Content Strategy'],
+                files: [],
+                tools: ['AI Tools', 'Research', 'Documentation'],
+                links: [],
+                created: new Date().toISOString()
+            }
+        ];
+        
+        // Add Jarvis projects to the projects list
+        jarvisProjects.forEach(p => {
+            if (!this.projects.find(existing => existing.id === p.id)) {
+                this.projects.push(p);
+            }
+        });
+        
+        this.saveData();
+        this.addLogEntry('Initialized ' + jarvisProjects.length + ' Jarvis projects', 'system');
     }
 
     // Show/hide working indicator
