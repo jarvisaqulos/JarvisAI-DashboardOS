@@ -84,11 +84,23 @@ body {
 }
 
 .logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
     animation: pulse 2s infinite;
-    filter: drop-shadow(0 0 5px var(--accent-green));
+    filter: drop-shadow(0 0 8px var(--accent-green));
+}
+
+/* Background watermark */
+.bg-watermark {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 300px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .logo-icon.working {
@@ -312,6 +324,49 @@ body {
 .dot.green { background: var(--accent-green); }
 .dot.blue { background: var(--accent-blue); }
 .dot.red { background: var(--accent-red); }
+
+/* Social Links */
+.social-links {
+    margin-top: 20px;
+    padding: 20px 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.social-links h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    padding: 0 4px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.social-link:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-green);
+    color: var(--text-primary);
+}
+
+.social-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
 
 /* Main Content */
 .content {
