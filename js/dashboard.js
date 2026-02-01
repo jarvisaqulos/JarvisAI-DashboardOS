@@ -986,6 +986,27 @@ class JarvisDashboard {
             spentEl.style.color = 'var(--accent-green)';
         }
 
+        // Update current session if available
+        if (credits.currentSession) {
+            const session = credits.currentSession;
+            const sessionModel = document.getElementById('sessionModel');
+            const sessionTokensIn = document.getElementById('sessionTokensIn');
+            const sessionTokensOut = document.getElementById('sessionTokensOut');
+            const sessionContext = document.getElementById('sessionContext');
+            const sessionCost = document.getElementById('sessionCost');
+            const sessionStatus = document.getElementById('sessionStatus');
+
+            if (sessionModel) sessionModel.textContent = session.model || '--';
+            if (sessionTokensIn) sessionTokensIn.textContent = session.tokensIn ? session.tokensIn.toLocaleString() : '--';
+            if (sessionTokensOut) sessionTokensOut.textContent = session.tokensOut ? session.tokensOut.toLocaleString() : '--';
+            if (sessionContext) sessionContext.textContent = session.contextUsed || '--';
+            if (sessionCost) sessionCost.textContent = session.costEstimate || '--';
+            if (sessionStatus) {
+                sessionStatus.textContent = session.status || 'inactive';
+                sessionStatus.style.color = session.status === 'active' ? 'var(--accent-green)' : 'var(--text-muted)';
+            }
+        }
+
         // Update providers list
         const providersList = document.getElementById('aiProvidersList');
         if (providersList && credits.providers) {
@@ -1001,12 +1022,20 @@ class JarvisDashboard {
                             <span class="detail-value">${provider.model}</span>
                         </div>
                         <div class="detail-row">
+                            <span class="detail-label">API Key:</span>
+                            <span class="detail-value" style="font-family: monospace; font-size: 11px;">${provider.apiKey || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
                             <span class="detail-label">Balance:</span>
                             <span class="detail-value">${provider.balance || 'N/A'}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Today's Usage:</span>
                             <span class="detail-value">${provider.usageToday}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Cost Estimate:</span>
+                            <span class="detail-value" style="color: ${(provider.costEstimate || '$0').replace('$', '') > 0 ? 'var(--accent-yellow)' : 'var(--accent-green)'}">${provider.costEstimate || '$0.00'}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Last Checked:</span>

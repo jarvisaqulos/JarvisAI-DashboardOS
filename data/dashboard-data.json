@@ -85,18 +85,6 @@
       "text": "Dashboard server restarted - data sync initiated",
       "type": "system",
       "timestamp": "2026-02-01T15:00:00.000Z"
-    },
-    {
-      "id": "1769924998134",
-      "text": "Checking calendar...",
-      "type": "system",
-      "timestamp": "2026-02-01T05:49:58.134Z"
-    },
-    {
-      "id": "1769924998132",
-      "text": "2 unread email(s) found",
-      "type": "email",
-      "timestamp": "2026-02-01T05:49:58.132Z"
     }
   ],
   "decisions": [],
@@ -113,7 +101,7 @@
   "weeklyReviews": [],
   "emailStatus": {
     "unread": 6,
-    "lastChecked": "2026-02-01T23:02:11.000Z",
+    "lastChecked": "2026-02-01T23:25:00.000Z",
     "alerts": [
       "X login from ChromeDesktop on Mac",
       "Google security alert",
@@ -123,41 +111,56 @@
   "calendarStatus": {
     "nextEvent": null,
     "eventsToday": 0,
-    "lastChecked": "2026-02-01T23:02:11.000Z"
+    "lastChecked": "2026-02-01T23:25:00.000Z"
   },
   "aiCredits": {
+    "currentSession": {
+      "model": "moonshot/kimi-k2.5",
+      "tokensIn": 79000,
+      "tokensOut": 43,
+      "contextUsed": "79k/256k (31%)",
+      "costEstimate": "$0.02",
+      "status": "active"
+    },
     "providers": [
       {
         "name": "Moonshot (Kimi)",
         "model": "kimi-k2.5",
-        "balance": null,
-        "usageToday": "Unknown",
+        "apiKey": "sk-iNq...24yUpy",
+        "balance": "Pay-as-you-go",
+        "usageToday": "~79k tokens",
+        "costEstimate": "$0.02",
         "status": "active",
-        "lastChecked": "2026-02-01T23:00:00.000Z",
-        "notes": "Pay-as-you-go via API key"
+        "lastChecked": "2026-02-01T23:25:00.000Z",
+        "notes": "API key active. Check balance at https://platform.moonshot.cn/"
       },
       {
         "name": "OpenRouter",
-        "model": "Various",
-        "balance": null,
+        "model": "Not configured",
+        "apiKey": "Not set",
+        "balance": "N/A",
         "usageToday": "$0.00",
-        "status": "available",
-        "lastChecked": "2026-02-01T23:00:00.000Z",
-        "notes": "Aggregated API access"
+        "costEstimate": "$0.00",
+        "status": "inactive",
+        "lastChecked": "2026-02-01T23:25:00.000Z",
+        "notes": "Add OPENROUTER_API_KEY to use this provider"
       },
       {
         "name": "Brave Search",
         "model": "Search API",
-        "balance": null,
-        "usageToday": "Unknown",
+        "apiKey": "BSAX_8w...rAG",
+        "balance": "Free Tier",
+        "usageToday": "~50 queries",
+        "costEstimate": "$0.00",
         "status": "active",
-        "lastChecked": "2026-02-01T23:00:00.000Z",
-        "notes": "Free tier: 2,000 queries/month"
+        "lastChecked": "2026-02-01T23:25:00.000Z",
+        "notes": "2,000 queries/month free. No usage API available."
       }
     ],
     "monthlyBudget": 200,
-    "spentThisMonth": 0,
+    "spentThisMonth": 0.02,
+    "remaining": 199.98,
     "alertThreshold": 150,
-    "lastUpdated": "2026-02-01T23:00:00.000Z"
+    "lastUpdated": "2026-02-01T23:25:00.000Z"
   }
 }

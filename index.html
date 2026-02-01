@@ -914,6 +914,48 @@
                     <p class="subtitle">Track API usage and remaining balances</p>
                 </div>
 
+                <!-- Current Session -->
+                <div class="panel status-panel">
+                    <div class="panel-header">
+                        <h2>⚡ Current Session</h2>
+                        <span class="live-indicator">LIVE</span>
+                    </div>
+                    <div class="panel-content">
+                        <div class="status-grid" id="currentSessionGrid">
+                            <div class="status-card">
+                                <div class="status-label">Model</div>
+                                <div class="status-value" id="sessionModel">--</div>
+                                <div class="status-sublabel">Active model</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Tokens In</div>
+                                <div class="status-value" id="sessionTokensIn">--</div>
+                                <div class="status-sublabel">Input tokens</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Tokens Out</div>
+                                <div class="status-value" id="sessionTokensOut">--</div>
+                                <div class="status-sublabel">Output tokens</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Context Used</div>
+                                <div class="status-value" id="sessionContext">--</div>
+                                <div class="status-sublabel">Of 256k limit</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Cost Estimate</div>
+                                <div class="status-value" id="sessionCost" style="color: var(--accent-green)">--</div>
+                                <div class="status-sublabel">This session</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-label">Status</div>
+                                <div class="status-value" id="sessionStatus">--</div>
+                                <div class="status-sublabel">Connection</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Budget Overview -->
                 <div class="panel status-panel">
                     <div class="panel-header">
