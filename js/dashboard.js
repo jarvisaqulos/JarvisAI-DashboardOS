@@ -56,6 +56,19 @@ class JarvisDashboard {
         this.renderAll();
         this.addLogEntry('Dashboard initialized', 'system');
         this.setStatus('idle');
+        
+        // Start auto-refresh every 30 seconds
+        this.startAutoRefresh();
+    }
+
+    // Auto-refresh dashboard data every 30 seconds
+    startAutoRefresh() {
+        setInterval(() => {
+            this.renderAll();
+            this.addLogEntry('Dashboard auto-refreshed', 'system');
+        }, 30000); // 30 seconds
+        
+        console.log('🔄 Auto-refresh enabled (every 30 seconds)');
     }
 
     // Force reset all data
