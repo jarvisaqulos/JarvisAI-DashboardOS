@@ -1,0 +1,128 @@
+{
+  "tasks": [
+    {
+      "id": "1738452000",
+      "title": "Monitor & Maintain Systems",
+      "description": "Heartbeat checks, email monitoring, calendar awareness",
+      "status": "in-progress",
+      "priority": "high",
+      "assignee": "Jarvis",
+      "created": "2026-02-01T08:00:00.000Z",
+      "updated": "2026-02-01T23:00:00.000Z"
+    },
+    {
+      "id": "1738452100",
+      "title": "Fix Slack Bot Connection",
+      "description": "Restarted gateway service, verified socket mode connected",
+      "status": "completed",
+      "priority": "high",
+      "assignee": "Jarvis",
+      "created": "2026-02-01T16:30:00.000Z",
+      "updated": "2026-02-01T17:25:00.000Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": "thinknlocal",
+      "name": "ThinkNLocal",
+      "goal": "1,000 partners @ $150-200/mo",
+      "status": "active",
+      "progress": 15,
+      "current": "150 partners"
+    },
+    {
+      "id": "aqulos",
+      "name": "AQULOS Rebuild",
+      "goal": "AI + automation growth agency",
+      "status": "in-progress",
+      "progress": 35,
+      "current": "Core systems operational"
+    },
+    {
+      "id": "ph-ventures",
+      "name": "Philippine Ventures",
+      "goal": "Dorm, farm, F&B operational",
+      "status": "in-progress",
+      "progress": 60,
+      "current": "Multi-business rollout"
+    }
+  ],
+  "resources": [
+    {
+      "id": "1",
+      "name": "Jarvis Dashboard",
+      "url": "http://localhost:3000",
+      "type": "tool"
+    },
+    {
+      "id": "2", 
+      "name": "OpenClaw Gateway",
+      "url": "http://localhost:18789",
+      "type": "tool"
+    },
+    {
+      "id": "3",
+      "name": "Google Workspace",
+      "url": "https://workspace.google.com",
+      "type": "service"
+    }
+  ],
+  "workLog": [
+    {
+      "id": "1769946000000",
+      "text": "Slack bot connection restored - gateway restarted",
+      "type": "system",
+      "timestamp": "2026-02-01T17:25:00.000Z"
+    },
+    {
+      "id": "1769942400000",
+      "text": "6 unread emails - X login alert, Google security, Google Cloud trial",
+      "type": "email",
+      "timestamp": "2026-02-01T16:00:00.000Z"
+    },
+    {
+      "id": "1769938800000",
+      "text": "Dashboard server restarted - data sync initiated",
+      "type": "system",
+      "timestamp": "2026-02-01T15:00:00.000Z"
+    },
+    {
+      "id": "1769924998134",
+      "text": "Checking calendar...",
+      "type": "system",
+      "timestamp": "2026-02-01T05:49:58.134Z"
+    },
+    {
+      "id": "1769924998132",
+      "text": "2 unread email(s) found",
+      "type": "email",
+      "timestamp": "2026-02-01T05:49:58.132Z"
+    }
+  ],
+  "decisions": [],
+  "delegations": [],
+  "phVentures": {
+    "businesses": [
+      {"name": "Dorm/Aparment", "status": "planning", "progress": 40},
+      {"name": "Farm", "status": "planning", "progress": 30},
+      {"name": "F&B", "status": "planning", "progress": 25}
+    ],
+    "team": [],
+    "checkIns": []
+  },
+  "weeklyReviews": [],
+  "emailStatus": {
+    "unread": 6,
+    "lastChecked": "2026-02-01T23:02:11.000Z",
+    "alerts": [
+      "X login from ChromeDesktop on Mac",
+      "Google security alert",
+      "Google Cloud Free Trial welcome"
+    ]
+  },
+  "calendarStatus": {
+    "nextEvent": null,
+    "eventsToday": 0,
+    "lastChecked": "2026-02-01T23:02:11.000Z"
+  }
+}
