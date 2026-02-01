@@ -2403,3 +2403,120 @@ body {
     background: var(--accent-green);
     color: var(--bg-primary);
 }
+
+/* AI Credits Section Styles */
+.provider-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.provider-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    transition: all 0.2s;
+}
+
+.provider-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-tertiary);
+}
+
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.provider-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.provider-status {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.provider-status.active {
+    color: var(--accent-green);
+    background: rgba(0, 210, 106, 0.15);
+}
+
+.provider-status.available {
+    color: var(--accent-blue);
+    background: rgba(33, 150, 243, 0.15);
+}
+
+.provider-status.inactive {
+    color: var(--text-muted);
+    background: var(--bg-hover);
+}
+
+.provider-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 24px;
+    margin-bottom: 12px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+}
+
+.detail-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+.provider-notes {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    font-style: italic;
+}
+
+.usage-chart-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+}
+
+.chart-message {
+    text-align: center;
+    color: var(--text-tertiary);
+}
+
+.chart-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.chart-message p {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.chart-subtext {
+    font-size: 12px;
+    color: var(--text-muted);
+}

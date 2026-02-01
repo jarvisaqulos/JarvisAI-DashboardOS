@@ -179,6 +179,12 @@ class JarvisDashboard {
         alert('Moltbook refresh: In production, this would sync with moltbook.com API');
     }
 
+    refreshAICredits() {
+        this.addLogEntry('Refreshing AI credits data...', 'system');
+        // In future, this would call provider APIs
+        alert('AI Credits refresh: In production, this would fetch balances from Moonshot, OpenRouter, etc.');
+    }
+
     addMoltbookActivity(text, type = 'post', icon = '🤖') {
         if (!this.moltbook) this.initializeMoltbook();
         if (!this.moltbook.activity) this.moltbook.activity = [];
@@ -940,6 +946,77 @@ class JarvisDashboard {
         this.updateCalendarStatus();
         this.renderPSEPortfolio();
         this.renderMoltbook();
+        this.renderAICredits();
+    }
+
+    renderAICredits() {
+        if (!this.aiCredits) {
+            // Initialize with defaults if not exists
+            this.aiCredits = {
+                providers: [
+                    { name: 'Moonshot (Kimi)', model: 'kimi-k2.5', balance: null, usageToday: 'Unknown', status: 'active', lastChecked: new Date().toISOString(), notes: 'Pay-as-you-go via API key' },
+                    { name: 'OpenRouter', model: 'Various', balance: null, usageToday: '$0.00', status: 'available', lastChecked: new Date().toISOString(), notes: 'Aggregated API access' },
+                    { name: 'Brave Search', model: 'Search API', balance: null, usageToday: 'Unknown', status: 'active', lastChecked: new Date().toISOString(), notes: 'Free tier: 2,000 queries/month' }
+                ],
+                monthlyBudget: 200,
+                spentThisMonth: 0,
+                alertThreshold: 150,
+                lastUpdated: new Date().toISOString()
+            };
+        }
+
+        const credits = this.aiCredits;
+
+        // Update budget cards
+        document.getElementById('aiBudget').textContent = `$${credits.monthlyBudget}`;
+        document.getElementById('aiSpent').textContent = `$${credits.spentThisMonth}`;
+        document.getElementById('aiRemaining').textContent = `$${credits.monthlyBudget - credits.spentThisMonth}`;
+        document.getElementById('aiThreshold').textContent = `$${credits.alertThreshold}`;
+
+        const spentPct = Math.round((credits.spentThisMonth / credits.monthlyBudget) * 100);
+        document.getElementById('aiSpentPct').textContent = `${spentPct}% used`;
+
+        // Color-code based on usage
+        const spentEl = document.getElementById('aiSpent');
+        if (spentPct >= 75) {
+            spentEl.style.color = 'var(--accent-red)';
+        } else if (spentPct >= 50) {
+            spentEl.style.color = 'var(--accent-yellow)';
+        } else {
+            spentEl.style.color = 'var(--accent-green)';
+        }
+
+        // Update providers list
+        const providersList = document.getElementById('aiProvidersList');
+        if (providersList && credits.providers) {
+            providersList.innerHTML = credits.providers.map(provider => `
+                <div class="provider-card">
+                    <div class="provider-header">
+                        <span class="provider-name">${provider.name}</span>
+                        <span class="provider-status ${provider.status}">● ${provider.status}</span>
+                    </div>
+                    <div class="provider-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Model:</span>
+                            <span class="detail-value">${provider.model}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Balance:</span>
+                            <span class="detail-value">${provider.balance || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Today's Usage:</span>
+                            <span class="detail-value">${provider.usageToday}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Checked:</span>
+                            <span class="detail-value">${this.timeAgo(provider.lastChecked)}</span>
+                        </div>
+                    </div>
+                    ${provider.notes ? `<div class="provider-notes">${provider.notes}</div>` : ''}
+                </div>
+            `).join('');
+        }
     }
 
     renderTasks() {

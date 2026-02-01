@@ -124,5 +124,40 @@
     "nextEvent": null,
     "eventsToday": 0,
     "lastChecked": "2026-02-01T23:02:11.000Z"
+  },
+  "aiCredits": {
+    "providers": [
+      {
+        "name": "Moonshot (Kimi)",
+        "model": "kimi-k2.5",
+        "balance": null,
+        "usageToday": "Unknown",
+        "status": "active",
+        "lastChecked": "2026-02-01T23:00:00.000Z",
+        "notes": "Pay-as-you-go via API key"
+      },
+      {
+        "name": "OpenRouter",
+        "model": "Various",
+        "balance": null,
+        "usageToday": "$0.00",
+        "status": "available",
+        "lastChecked": "2026-02-01T23:00:00.000Z",
+        "notes": "Aggregated API access"
+      },
+      {
+        "name": "Brave Search",
+        "model": "Search API",
+        "balance": null,
+        "usageToday": "Unknown",
+        "status": "active",
+        "lastChecked": "2026-02-01T23:00:00.000Z",
+        "notes": "Free tier: 2,000 queries/month"
+      }
+    ],
+    "monthlyBudget": 200,
+    "spentThisMonth": 0,
+    "alertThreshold": 150,
+    "lastUpdated": "2026-02-01T23:00:00.000Z"
   }
 }
