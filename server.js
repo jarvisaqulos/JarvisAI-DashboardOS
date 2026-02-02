@@ -11,6 +11,17 @@ const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'rSCy45jxNeuvjsxuOKbl';
 
+// CORS headers for API requests
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 // Serve static files
 app.use(express.static(__dirname));
 app.use(express.json({ limit: '10mb' }));
@@ -151,17 +162,59 @@ app.get('/voice', (req, res) => {
 // Chat API - forward to OpenClaw gateway
 app.post('/api/chat', async (req, res) => {
     const { message } = req.body;
-    
+
     if (!message) {
         return res.status(400).json({ error: 'Message is required' });
     }
 
     try {
-        // Simple echo response for now - in production this would connect to OpenClaw
-        res.json({
-            text: `I heard you say: "${message}". The voice chat connection is working! Full OpenClaw integration coming soon.`,
-            timestamp: new Date().toISOString()
+        // Connect to OpenClaw gateway
+        const gatewayToken = 'ac8d1303479b4f4ffd8511591955e10326cb281a650fe57867c9f2213d9ac9d5';
+
+        // Make request to OpenClaw gateway
+        const options = {
+            hostname: '127.0.0.1',
+            port: 18789,
+            path: '/v1/chat',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${gatewayToken}`
+            }
+        };
+
+        const gatewayReq = http.request(options, (gatewayRes) => {
+            let data = '';
+            gatewayRes.on('data', chunk => data += chunk);
+            gatewayRes.on('end', () => {
+                try {
+                    const response = JSON.parse(data);
+                    res.json({
+                        text: response.text || response.message || 'I received your message.',
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (e) {
+                    // If gateway doesn't have chat endpoint, fallback to local echo
+                    res.json({
+                        text: `You said: "${message}". I'm Jarvis, your AI assistant. OpenClaw full integration is being configured.`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
         });
+
+        gatewayReq.on('error', (err) => {
+            console.error('Gateway error:', err.message);
+            // Fallback response when gateway is unavailable
+            res.json({
+                text: `You said: "${message}". I'm processing this locally while OpenClaw connection is being established.`,
+                timestamp: new Date().toISOString()
+            });
+        });
+
+        gatewayReq.write(JSON.stringify({ message }));
+        gatewayReq.end();
+
     } catch (err) {
         console.error('Chat error:', err);
         res.status(500).json({ error: 'Failed to process message' });

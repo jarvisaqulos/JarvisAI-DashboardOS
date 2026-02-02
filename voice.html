@@ -607,11 +607,14 @@
                 await generateTTS(textToSpeak);
                 
             } catch (err) {
-                console.error('Error:', err);
+                console.error('Full error:', err);
                 typingIndicator.remove();
-                const errorText = 'Sorry, I had trouble processing that. Please try again.';
+                const errorDetails = err.message || 'Unknown error';
+                const errorText = `Sorry, I had trouble processing that. Error: ${errorDetails}`;
                 addMessage('jarvis', errorText);
-                await generateTTS(errorText);
+                console.log('Error details:', errorDetails);
+                // Don't speak error to avoid loop - just show it
+                resetMic();
             }
         }
         
