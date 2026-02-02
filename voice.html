@@ -7,20 +7,31 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .voice-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
+        
+        .voice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .voice-header {
             text-align: center;
             margin-bottom: 40px;
         }
-
+        
         .voice-header h1 {
             font-size: 32px;
             margin-bottom: 8px;
@@ -28,600 +39,497 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
+        
         .voice-header p {
             color: var(--text-secondary);
         }
-
-        .voice-visualizer {
+        
+        .chat-area {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            min-height: 300px;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-user {
+            text-align: right;
+        }
+        
+        .message-jarvis {
+            text-align: left;
+        }
+        
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        
+        .message-user .message-bubble {
+            background: var(--accent-blue);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-jarvis .message-bubble {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-meta {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        
+        .voice-controls {
             display: flex;
-            justify-content: center;
+            gap: 12px;
             align-items: center;
-            height: 200px;
-            margin-bottom: 40px;
-            position: relative;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
         }
-
-        .voice-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid var(--accent-green);
-            opacity: 0.3;
-            animation: pulse-ring 2s ease-out infinite;
-        }
-
-        .voice-ring:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-
-        .voice-ring:nth-child(3) {
-            animation-delay: 1s;
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                width: 100px;
-                height: 100px;
-                opacity: 0.6;
-            }
-            100% {
-                width: 200px;
-                height: 200px;
-                opacity: 0;
-            }
-        }
-
-        .voice-button {
-            width: 120px;
-            height: 120px;
+        
+        .mic-button {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dim));
-            color: var(--bg-primary);
-            font-size: 48px;
+            color: white;
+            font-size: 32px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 210, 106, 0.3);
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0, 210, 106, 0.3);
         }
-
-        .voice-button:hover {
+        
+        .mic-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(0, 210, 106, 0.4);
+            box-shadow: 0 6px 30px rgba(0, 210, 106, 0.4);
         }
-
-        .voice-button:active {
+        
+        .mic-button:active {
             transform: scale(0.95);
         }
-
-        .voice-button.listening {
-            background: linear-gradient(135deg, var(--accent-red), #c62828);
-            box-shadow: 0 8px 32px rgba(244, 67, 54, 0.3);
-            animation: listening-pulse 1s ease-in-out infinite;
+        
+        .mic-button.recording {
+            background: linear-gradient(135deg, var(--accent-red), #d32f2f);
+            box-shadow: 0 4px 20px rgba(244, 67, 54, 0.3);
+            animation: pulse 1.5s infinite;
         }
-
-        @keyframes listening-pulse {
+        
+        @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
         }
-
-        .voice-button.processing {
-            background: linear-gradient(135deg, var(--accent-yellow), #f57c00);
-            box-shadow: 0 8px 32px rgba(255, 193, 7, 0.3);
+        
+        .mic-button.processing {
+            background: var(--accent-yellow);
+            animation: spin 1s linear infinite;
         }
-
-        .voice-status {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 18px;
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-text {
             color: var(--text-secondary);
-            min-height: 30px;
+            font-size: 14px;
+            min-width: 150px;
+            text-align: center;
         }
-
-        .voice-status.recording {
-            color: var(--accent-red);
+        
+        .text-input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
         }
-
-        .voice-status.processing {
-            color: var(--accent-yellow);
-        }
-
-        .voice-status.speaking {
-            color: var(--accent-green);
-        }
-
-        .transcript-container {
+        
+        .text-input {
             flex: 1;
-            overflow-y: auto;
-            max-height: 400px;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-color);
-        }
-
-        .message {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background: var(--accent-blue);
-        }
-
-        .message.assistant .message-avatar {
-            background: var(--accent-green);
-        }
-
-        .message-content {
-            max-width: 70%;
             padding: 12px 16px;
-            border-radius: var(--radius-md);
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
+            border-radius: 24px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
         }
-
-        .message.user .message-content {
-            background: var(--bg-active);
-            border-color: var(--accent-blue);
-        }
-
-        .message.assistant .message-content {
-            background: var(--bg-hover);
+        
+        .text-input:focus {
             border-color: var(--accent-green);
         }
-
-        .message-text {
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
-        .voice-controls {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .control-btn {
-            padding: 10px 20px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
+        
+        .send-button {
+            padding: 12px 24px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 24px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
+            font-weight: 500;
         }
-
-        .control-btn:hover {
-            background: var(--bg-hover);
-            border-color: var(--border-hover);
-            color: var(--text-primary);
+        
+        .send-button:hover {
+            background: var(--accent-green-dim);
         }
-
-        .control-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        
+        .typing-indicator {
+            display: none;
+            padding: 12px 18px;
+            background: var(--bg-tertiary);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
         }
-
+        
+        .typing-indicator.show {
+            display: inline-block;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
         .back-link {
             position: absolute;
             top: 20px;
             left: 20px;
             color: var(--text-secondary);
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             font-size: 14px;
-            transition: color 0.2s;
         }
-
+        
         .back-link:hover {
             color: var(--accent-green);
         }
-
-        .settings-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-tertiary);
+            padding: 60px 20px;
         }
-
-        .settings-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
         }
-
-        .settings-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .voice-selector {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 8px 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .loading-indicator {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-color);
-            border-top-color: var(--accent-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        .transcript {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            font-style: italic;
         }
     </style>
 </head>
-<body class="dark-mode">
+<body>
     <a href="/" class="back-link">← Back to Dashboard</a>
     
-    <div class="settings-panel">
-        <select class="voice-selector" id="voiceSelector">
-            <option value="rSCy45jxNeuvjsxuOKbl">Default Voice</option>
-        </select>
-    </div>
-
     <div class="voice-container">
         <div class="voice-header">
             <h1>🎙️ Voice Chat</h1>
-            <p>Hold the button and speak to Jarvis</p>
+            <p>Hold the microphone button and speak naturally</p>
         </div>
-
-        <div class="voice-visualizer">
-            <div class="voice-ring"></div>
-            <div class="voice-ring"></div>
-            <div class="voice-ring"></div>
-            <button class="voice-button" id="voiceButton">
-                🎤
-            </button>
-        </div>
-
-        <div class="voice-status" id="voiceStatus">Tap and hold to speak</div>
-
-        <div class="transcript-container" id="transcriptContainer">
-            <div class="message assistant">
-                <div class="message-avatar">🤖</div>
-                <div class="message-content">
-                    <div class="message-text">Hello Kris! I'm ready to talk. Hold the microphone button and speak to me.</div>
-                    <div class="message-time">Just now</div>
-                </div>
+        
+        <div class="chat-area" id="chatArea">
+            <div class="empty-state">
+                <div class="empty-state-icon">🎤</div>
+                <p>Press and hold the microphone to start talking to Jarvis</p>
             </div>
         </div>
-
+        
         <div class="voice-controls">
-            <button class="control-btn" id="clearBtn">Clear Chat</button>
-            <button class="control-btn" id="testVoiceBtn">Test Voice</button>
+            <button class="mic-button" id="micButton" title="Hold to speak">
+                🎙️
+            </button>
+            <span class="status-text" id="statusText">Tap and hold to speak</span>
+        </div>
+        
+        <div class="text-input-area">
+            <input type="text" class="text-input" id="textInput" placeholder="Or type your message here...">
+            <button class="send-button" id="sendButton">Send</button>
         </div>
     </div>
 
     <script>
-        class VoiceChat {
-            constructor() {
-                this.recognition = null;
-                this.isListening = false;
-                this.synth = window.speechSynthesis;
-                this.elevenLabsEnabled = true;
-                this.currentAudio = null;
+        const micButton = document.getElementById('micButton');
+        const statusText = document.getElementById('statusText');
+        const chatArea = document.getElementById('chatArea');
+        const textInput = document.getElementById('textInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        let recognition = null;
+        let isRecording = false;
+        let audioContext = null;
+        
+        // Initialize Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                isRecording = true;
+                micButton.classList.add('recording');
+                statusText.textContent = 'Listening...';
+            };
+            
+            recognition.onresult = (event) => {
+                let finalTranscript = '';
+                let interimTranscript = '';
                 
-                this.init();
-            }
-
-            init() {
-                this.setupSpeechRecognition();
-                this.setupEventListeners();
-                this.loadVoices();
-            }
-
-            setupSpeechRecognition() {
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    this.recognition = new SpeechRecognition();
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
-                    this.recognition.lang = 'en-US';
-
-                    this.recognition.onstart = () => {
-                        this.isListening = true;
-                        this.updateUI('listening');
-                    };
-
-                    this.recognition.onend = () => {
-                        this.isListening = false;
-                        this.updateUI('idle');
-                    };
-
-                    this.recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
-                        this.addMessage('user', transcript);
-                        this.processMessage(transcript);
-                    };
-
-                    this.recognition.onerror = (event) => {
-                        console.error('Speech recognition error:', event.error);
-                        this.isListening = false;
-                        this.updateUI('idle');
-                        this.updateStatus('Error: ' + event.error);
-                    };
-                } else {
-                    this.updateStatus('Speech recognition not supported in this browser');
-                }
-            }
-
-            setupEventListeners() {
-                const voiceButton = document.getElementById('voiceButton');
-                const clearBtn = document.getElementById('clearBtn');
-                const testVoiceBtn = document.getElementById('testVoiceBtn');
-                const voiceSelector = document.getElementById('voiceSelector');
-
-                // Hold to talk
-                voiceButton.addEventListener('mousedown', () => this.startListening());
-                voiceButton.addEventListener('mouseup', () => this.stopListening());
-                voiceButton.addEventListener('mouseleave', () => this.stopListening());
-                
-                // Touch support
-                voiceButton.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.startListening();
-                });
-                voiceButton.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.stopListening();
-                });
-
-                clearBtn.addEventListener('click', () => this.clearChat());
-                testVoiceBtn.addEventListener('click', () => this.testVoice());
-                voiceSelector.addEventListener('change', (e) => {
-                    this.currentVoiceId = e.target.value;
-                });
-            }
-
-            async loadVoices() {
-                try {
-                    const response = await fetch('/api/voices');
-                    const data = await response.json();
-                    
-                    if (data.voices && data.voices.length > 0) {
-                        const selector = document.getElementById('voiceSelector');
-                        selector.innerHTML = data.voices.map(v => 
-                            `<option value="${v.voice_id}" ${v.voice_id === 'rSCy45jxNeuvjsxuOKbl' ? 'selected' : ''}>${v.name}</option>`
-                        ).join('');
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
                     }
-                } catch (err) {
-                    console.log('Could not load voices:', err);
                 }
-            }
-
-            startListening() {
-                if (this.recognition && !this.isListening) {
-                    this.recognition.start();
-                }
-            }
-
-            stopListening() {
-                if (this.recognition && this.isListening) {
-                    this.recognition.stop();
-                }
-            }
-
-            updateUI(state) {
-                const button = document.getElementById('voiceButton');
-                const status = document.getElementById('voiceStatus');
                 
-                button.className = 'voice-button';
-                status.className = 'voice-status';
-                
-                switch(state) {
-                    case 'listening':
-                        button.classList.add('listening');
-                        status.classList.add('recording');
-                        status.textContent = 'Listening...';
-                        break;
-                    case 'processing':
-                        button.classList.add('processing');
-                        status.classList.add('processing');
-                        status.textContent = 'Processing...';
-                        break;
-                    case 'speaking':
-                        status.classList.add('speaking');
-                        status.textContent = 'Speaking...';
-                        break;
-                    default:
-                        status.textContent = 'Tap and hold to speak';
+                if (finalTranscript) {
+                    addMessage('user', finalTranscript);
+                    sendToJarvis(finalTranscript);
                 }
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                statusText.textContent = 'Error: ' + event.error;
+                resetMic();
+            };
+            
+            recognition.onend = () => {
+                resetMic();
+            };
+        } else {
+            statusText.textContent = 'Speech API not supported in this browser';
+            micButton.disabled = true;
+        }
+        
+        function resetMic() {
+            isRecording = false;
+            micButton.classList.remove('recording', 'processing');
+            statusText.textContent = 'Tap and hold to speak';
+        }
+        
+        // Mic button events
+        micButton.addEventListener('mousedown', startRecording);
+        micButton.addEventListener('mouseup', stopRecording);
+        micButton.addEventListener('mouseleave', stopRecording);
+        micButton.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
+        micButton.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); });
+        
+        function startRecording() {
+            if (recognition && !isRecording) {
+                recognition.start();
             }
-
-            updateStatus(text) {
-                document.getElementById('voiceStatus').textContent = text;
+        }
+        
+        function stopRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
             }
-
-            addMessage(role, text) {
-                const container = document.getElementById('transcriptContainer');
-                const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${role}`;
-                messageDiv.innerHTML = `
-                    <div class="message-avatar">${role === 'user' ? '👤' : '🤖'}</div>
-                    <div class="message-content">
-                        <div class="message-text">${this.escapeHtml(text)}</div>
-                        <div class="message-time">${time}</div>
+        }
+        
+        // Text input
+        sendButton.addEventListener('click', () => {
+            const text = textInput.value.trim();
+            if (text) {
+                addMessage('user', text);
+                sendToJarvis(text);
+                textInput.value = '';
+            }
+        });
+        
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+        
+        function addMessage(sender, text) {
+            // Remove empty state if present
+            const emptyState = chatArea.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${sender}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+            
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+            meta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(meta);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message message-jarvis typing-message';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator show">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
-                `;
+                </div>
+            `;
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return typingDiv;
+        }
+        
+        async function sendToJarvis(text) {
+            micButton.classList.add('processing');
+            statusText.textContent = 'Jarvis is thinking...';
+            
+            const typingIndicator = showTyping();
+            
+            try {
+                // Send to OpenClaw gateway
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
                 
-                container.appendChild(messageDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-
-            async processMessage(text) {
-                this.updateUI('processing');
-                
-                try {
-                    // Send to OpenClaw via the gateway
-                    const response = await fetch('http://localhost:18789/api/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: text,
-                            channel: 'voice',
-                            session: 'voice-chat'
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    const reply = data.response || "I'm not sure how to respond to that.";
-                    
-                    this.addMessage('assistant', reply);
-                    await this.speak(reply);
-                    
-                } catch (err) {
-                    console.error('Error processing message:', err);
-                    const fallback = "I'm having trouble connecting right now. Please try again.";
-                    this.addMessage('assistant', fallback);
-                    await this.speak(fallback);
+                if (!response.ok) {
+                    throw new Error('Failed to get response');
                 }
-            }
-
-            async speak(text) {
-                this.updateUI('speaking');
                 
-                if (this.elevenLabsEnabled) {
-                    try {
-                        await this.speakWithElevenLabs(text);
-                    } catch (err) {
-                        console.log('ElevenLabs failed, falling back to browser TTS');
-                        this.speakWithBrowser(text);
-                    }
+                const data = await response.json();
+                
+                // Remove typing indicator
+                typingIndicator.remove();
+                
+                // Add text response
+                addMessage('jarvis', data.text || 'I received your message.');
+                
+                // Play voice response
+                if (data.audioUrl) {
+                    playAudio(data.audioUrl);
                 } else {
-                    this.speakWithBrowser(text);
+                    // Generate TTS
+                    generateTTS(data.text || 'I received your message.');
                 }
                 
-                this.updateUI('idle');
+            } catch (err) {
+                console.error('Error:', err);
+                typingIndicator.remove();
+                addMessage('jarvis', 'Sorry, I had trouble processing that. Please try again.');
+                resetMic();
             }
-
-            async speakWithElevenLabs(text) {
-                const voiceId = document.getElementById('voiceSelector').value;
+        }
+        
+        async function generateTTS(text) {
+            try {
+                statusText.textContent = 'Generating voice...';
                 
                 const response = await fetch('/api/tts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, voiceId })
+                    body: JSON.stringify({ text: text })
                 });
                 
                 if (!response.ok) {
-                    throw new Error('TTS request failed');
+                    throw new Error('TTS failed');
                 }
                 
                 const audioBlob = await response.blob();
                 const audioUrl = URL.createObjectURL(audioBlob);
+                playAudio(audioUrl);
                 
-                return new Promise((resolve, reject) => {
-                    if (this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
-                    
-                    const audio = new Audio(audioUrl);
-                    this.currentAudio = audio;
-                    
-                    audio.onended = () => {
-                        URL.revokeObjectURL(audioUrl);
-                        this.currentAudio = null;
-                        resolve();
-                    };
-                    
-                    audio.onerror = reject;
-                    audio.play();
-                });
-            }
-
-            speakWithBrowser(text) {
-                return new Promise((resolve) => {
-                    if (this.synth.speaking) {
-                        this.synth.cancel();
-                    }
-                    
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.rate = 1;
-                    utterance.pitch = 1;
-                    
-                    utterance.onend = resolve;
-                    this.synth.speak(utterance);
-                });
-            }
-
-            clearChat() {
-                const container = document.getElementById('transcriptContainer');
-                container.innerHTML = `
-                    <div class="message assistant">
-                        <div class="message-avatar">🤖</div>
-                        <div class="message-content">
-                            <div class="message-text">Chat cleared. How can I help you?</div>
-                            <div class="message-time">Just now</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            async testVoice() {
-                this.updateUI('speaking');
-                await this.speak("Hello Kris! This is a test of my voice. I'm ready to help you with anything you need.");
-                this.updateUI('idle');
+            } catch (err) {
+                console.error('TTS error:', err);
+                statusText.textContent = 'Voice unavailable (text only)';
+                setTimeout(resetMic, 2000);
             }
         }
-
-        // Initialize voice chat
-        const voiceChat = new VoiceChat();
+        
+        function playAudio(url) {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const audio = new Audio(url);
+            audio.onended = () => {
+                resetMic();
+            };
+            audio.onerror = () => {
+                statusText.textContent = 'Audio playback error';
+                resetMic();
+            };
+            
+            audio.play().then(() => {
+                statusText.textContent = 'Speaking...';
+            }).catch(err => {
+                console.error('Playback error:', err);
+                resetMic();
+            });
+        }
+        
+        // Request microphone permission on first interaction
+        micButton.addEventListener('click', async () => {
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (err) {
+                console.log('Mic permission:', err);
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
