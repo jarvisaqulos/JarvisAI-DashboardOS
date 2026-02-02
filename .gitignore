@@ -4,3 +4,4 @@ node_modules/
 *.log
 data/*
 !data/dashboard-data.json
+certs/*.key
