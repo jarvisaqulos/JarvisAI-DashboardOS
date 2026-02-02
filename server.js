@@ -2,9 +2,11 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'rSCy45jxNeuvjsxuOKbl';
@@ -146,8 +148,44 @@ app.get('/voice', (req, res) => {
     res.sendFile(path.join(__dirname, 'voice.html'));
 });
 
+// Check for SSL certificates
+const certPath = path.join(__dirname, 'certs', 'localhost.crt');
+const keyPath = path.join(__dirname, 'certs', 'localhost.key');
+const hasSSL = fs.existsSync(certPath) && fs.existsSync(keyPath);
+
+if (hasSSL) {
+    // Start HTTPS server for voice/mic access
+    const sslOptions = {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+    };
+    
+    https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
+        console.log(`
+╔════════════════════════════════════════════════════════╗
+║                                                        ║
+║     🤖 JARVIS AQULOS DASHBOARD v2.0.0                 ║
+║                                                        ║
+║     Dark Mode Operating System                         ║
+║     SSL: ENABLED ✅                                    ║
+║                                                        ║
+║     HTTP:  http://localhost:${PORT}                         ║
+║     HTTPS: https://localhost:${HTTPS_PORT} 👈 Use for voice        ║
+║                                                        ║
+║     Voice Chat: https://localhost:${HTTPS_PORT}/voice            ║
+║                                                        ║
+╚════════════════════════════════════════════════════════╝
+        `);
+    });
+} else {
+    console.log('⚠️  SSL certificates not found. Voice features will be limited.');
+    console.log('   Run: node generate-certs.js to create SSL certificates.\n');
+}
+
+// Always start HTTP server
 app.listen(PORT, () => {
-    console.log(`
+    if (!hasSSL) {
+        console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║                                                        ║
 ║     🤖 JARVIS AQULOS DASHBOARD v2.0.0                 ║
@@ -159,5 +197,6 @@ app.listen(PORT, () => {
 ║     Voice Chat: http://localhost:${PORT}/voice               ║
 ║                                                        ║
 ╚════════════════════════════════════════════════════════╝
-    `);
+        `);
+    }
 });
