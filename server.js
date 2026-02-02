@@ -148,6 +148,26 @@ app.get('/voice', (req, res) => {
     res.sendFile(path.join(__dirname, 'voice.html'));
 });
 
+// Chat API - forward to OpenClaw gateway
+app.post('/api/chat', async (req, res) => {
+    const { message } = req.body;
+    
+    if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+    }
+
+    try {
+        // Simple echo response for now - in production this would connect to OpenClaw
+        res.json({
+            text: `I heard you say: "${message}". The voice chat connection is working! Full OpenClaw integration coming soon.`,
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error('Chat error:', err);
+        res.status(500).json({ error: 'Failed to process message' });
+    }
+});
+
 // Check for SSL certificates
 const certPath = path.join(__dirname, 'certs', 'localhost.crt');
 const keyPath = path.join(__dirname, 'certs', 'localhost.key');
