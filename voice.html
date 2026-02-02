@@ -111,25 +111,34 @@
             border: 1px solid var(--border-color);
         }
         
+        .mic-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .mic-button {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dim));
             color: white;
-            font-size: 32px;
+            font-size: 40px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(0, 210, 106, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 210, 106, 0.4);
+            position: relative;
+            z-index: 2;
         }
         
         .mic-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 30px rgba(0, 210, 106, 0.4);
+            transform: scale(1.08);
+            box-shadow: 0 6px 40px rgba(0, 210, 106, 0.5);
         }
         
         .mic-button:active {
@@ -138,18 +147,115 @@
         
         .mic-button.recording {
             background: linear-gradient(135deg, var(--accent-red), #d32f2f);
-            box-shadow: 0 4px 20px rgba(244, 67, 54, 0.3);
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 30px rgba(244, 67, 54, 0.5);
+            animation: micPulse 1.2s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .mic-ring {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-green);
+            opacity: 0;
+            z-index: 1;
+        }
+        
+        .mic-button.recording ~ .mic-ring {
+            animation: ringPulse 1.5s infinite;
+        }
+        
+        @keyframes micPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 4px 30px rgba(244, 67, 54, 0.5);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 6px 40px rgba(244, 67, 54, 0.7);
+            }
+        }
+        
+        @keyframes ringPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+        
+        .waveform {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin-left: 20px;
+        }
+        
+        .waveform.active {
+            display: flex;
+        }
+        
+        .wave-bar {
+            width: 4px;
+            background: var(--accent-green);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(1) { height: 20%; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 40%; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 80%; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 60%; animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { height: 40%; animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { height: 20%; animation-delay: 0.6s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
         }
         
         .mic-button.processing {
             background: var(--accent-yellow);
             animation: spin 1s linear infinite;
+        }
+        
+        .sample-voice-btn {
+            padding: 10px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            margin-left: 15px;
+        }
+        
+        .sample-voice-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .browser-notice {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .browser-notice a {
+            color: var(--accent-green);
+            text-decoration: none;
         }
         
         @keyframes spin {
@@ -280,11 +386,31 @@
             </div>
         </div>
         
+        <div class="browser-notice" id="browserNotice" style="display: none;">
+            ⚠️ For voice input, please use <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>. 
+            You can still type messages below.
+        </div>
+
         <div class="voice-controls">
-            <button class="mic-button" id="micButton" title="Hold to speak">
-                🎙️
-            </button>
+            <div class="mic-container">
+                <button class="mic-button" id="micButton" title="Hold to speak">
+                    🎙️
+                </button>
+                <div class="mic-ring"></div>
+            </div>
+            <div class="waveform" id="waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
             <span class="status-text" id="statusText">Tap and hold to speak</span>
+            <button class="sample-voice-btn" id="sampleVoiceBtn" title="Test my voice">
+                🔊 Test Voice
+            </button>
         </div>
         
         <div class="text-input-area">
@@ -305,6 +431,9 @@
         let audioContext = null;
         
         // Initialize Web Speech API
+        const browserNotice = document.getElementById('browserNotice');
+        const waveform = document.getElementById('waveform');
+        
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -315,7 +444,8 @@
             recognition.onstart = () => {
                 isRecording = true;
                 micButton.classList.add('recording');
-                statusText.textContent = 'Listening...';
+                waveform.classList.add('active');
+                statusText.textContent = 'Listening... Speak now';
             };
             
             recognition.onresult = (event) => {
@@ -347,22 +477,34 @@
                 resetMic();
             };
         } else {
-            statusText.textContent = 'Speech API not supported in this browser';
-            micButton.disabled = true;
+            browserNotice.style.display = 'block';
+            statusText.textContent = 'Type your message below';
+            micButton.style.opacity = '0.5';
+            micButton.style.cursor = 'not-allowed';
         }
+        
+        // Sample voice button
+        document.getElementById('sampleVoiceBtn').addEventListener('click', async () => {
+            const sampleText = "Hello Kris, I'm Jarvis. Your AI assistant is online and ready to help you with whatever you need.";
+            addMessage('jarvis', sampleText);
+            await generateTTS(sampleText);
+        });
         
         function resetMic() {
             isRecording = false;
             micButton.classList.remove('recording', 'processing');
-            statusText.textContent = 'Tap and hold to speak';
+            waveform.classList.remove('active');
+            statusText.textContent = recognition ? 'Tap and hold to speak' : 'Type your message below';
         }
         
-        // Mic button events
-        micButton.addEventListener('mousedown', startRecording);
-        micButton.addEventListener('mouseup', stopRecording);
-        micButton.addEventListener('mouseleave', stopRecording);
-        micButton.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
-        micButton.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); });
+        // Mic button events (only if speech recognition is available)
+        if (recognition) {
+            micButton.addEventListener('mousedown', startRecording);
+            micButton.addEventListener('mouseup', stopRecording);
+            micButton.addEventListener('mouseleave', stopRecording);
+            micButton.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
+            micButton.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); });
+        }
         
         function startRecording() {
             if (recognition && !isRecording) {
