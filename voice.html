@@ -601,19 +601,17 @@
                 // Add text response
                 addMessage('jarvis', data.text || 'I received your message.');
                 
-                // Play voice response
-                if (data.audioUrl) {
-                    playAudio(data.audioUrl);
-                } else {
-                    // Generate TTS
-                    generateTTS(data.text || 'I received your message.');
-                }
+                // Always play voice response
+                const textToSpeak = data.text || 'I received your message.';
+                statusText.textContent = 'Speaking...';
+                await generateTTS(textToSpeak);
                 
             } catch (err) {
                 console.error('Error:', err);
                 typingIndicator.remove();
-                addMessage('jarvis', 'Sorry, I had trouble processing that. Please try again.');
-                resetMic();
+                const errorText = 'Sorry, I had trouble processing that. Please try again.';
+                addMessage('jarvis', errorText);
+                await generateTTS(errorText);
             }
         }
         
