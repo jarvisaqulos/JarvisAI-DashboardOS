@@ -464,15 +464,16 @@ class JarvisDashboard {
         
         // Show next meeting
         const nextMeetingEl = document.getElementById('nextMeeting');
+        const nextMeetingTimeEl = document.getElementById('nextMeetingTime');
         if (nextMeetingEl) {
             const upcoming = this.getUpcomingEvents(24);
             if (upcoming.length > 0) {
                 const next = upcoming[0];
                 nextMeetingEl.textContent = next.title;
-                document.getElementById('nextMeetingTime').textContent = this.formatTime(next.start);
+                if (nextMeetingTimeEl) nextMeetingTimeEl.textContent = this.formatTime(next.start);
             } else {
                 nextMeetingEl.textContent = 'No upcoming meetings';
-                document.getElementById('nextMeetingTime').textContent = '—';
+                if (nextMeetingTimeEl) nextMeetingTimeEl.textContent = '—';
             }
         }
     }
@@ -929,7 +930,8 @@ class JarvisDashboard {
         // Update last action
         this.lastAction = text;
         this.lastActionTime = new Date();
-        document.getElementById('lastAction').textContent = text;
+        const lastActionEl = document.getElementById('lastAction');
+        if (lastActionEl) lastActionEl.textContent = text;
     }
 
     // Rendering
@@ -1261,13 +1263,15 @@ class JarvisDashboard {
         document.getElementById('pendingCount').textContent = pending.length;
         document.getElementById('completedCount').textContent = completed.length;
         
-        // Update active task display
+        // Update active task display (with null checks for elements that may not exist)
+        const activeTaskEl = document.getElementById('activeTask');
+        const taskProgressEl = document.getElementById('taskProgress');
         if (active.length > 0) {
-            document.getElementById('activeTask').textContent = active[0].name;
-            document.getElementById('taskProgress').textContent = `${active.length} active task${active.length > 1 ? 's' : ''}`;
+            if (activeTaskEl) activeTaskEl.textContent = active[0].name;
+            if (taskProgressEl) taskProgressEl.textContent = `${active.length} active task${active.length > 1 ? 's' : ''}`;
         } else {
-            document.getElementById('activeTask').textContent = 'None';
-            document.getElementById('taskProgress').textContent = '--';
+            if (activeTaskEl) activeTaskEl.textContent = 'None';
+            if (taskProgressEl) taskProgressEl.textContent = '--';
         }
         
         // Render lists
@@ -1400,10 +1404,15 @@ class JarvisDashboard {
         const completed = this.tasks.filter(t => t.status === 'completed').length;
         const active = this.projects.filter(p => p.status === 'active').length;
         
-        document.getElementById('statTasksCompleted').textContent = completed;
-        document.getElementById('statProjectsActive').textContent = active;
-        document.getElementById('statResources').textContent = this.resources.length;
-        document.getElementById('statWorkLog').textContent = this.workLog.length;
+        const statTasksCompletedEl = document.getElementById('statTasksCompleted');
+        const statProjectsActiveEl = document.getElementById('statProjectsActive');
+        const statResourcesEl = document.getElementById('statResources');
+        const statWorkLogEl = document.getElementById('statWorkLog');
+        
+        if (statTasksCompletedEl) statTasksCompletedEl.textContent = completed;
+        if (statProjectsActiveEl) statProjectsActiveEl.textContent = active;
+        if (statResourcesEl) statResourcesEl.textContent = this.resources.length;
+        if (statWorkLogEl) statWorkLogEl.textContent = this.workLog.length;
     }
 
     // Utility
