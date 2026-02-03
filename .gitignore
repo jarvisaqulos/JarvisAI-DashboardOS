@@ -6,3 +6,8 @@ data/*
 !data/dashboard-data.json
 certs/*.key
 certs/
+server-backup.js
+server-simple.js
+server-v2.js
+voice-executor.js
+voice.html

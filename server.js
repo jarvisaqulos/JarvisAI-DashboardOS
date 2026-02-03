@@ -10,7 +10,7 @@ const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'rSCy45jxNeuvjsxuOKbl';
-const GATEWAY_TOKEN = 'ac8d1303479b4f4ffd8511591955e10326cb281a650fe57867c9f2213d9ac9d5';
+const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN;
 
 // Store responses from agent
 const agentResponses = new Map();
