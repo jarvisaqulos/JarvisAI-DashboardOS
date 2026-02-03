@@ -375,20 +375,28 @@
     
     <div class="voice-container">
         <div class="voice-header">
-            <h1>🎙️ Voice Chat</h1>
-            <p>Hold the microphone button and speak naturally</p>
+            <h1>🎙️ Jarvis Voice</h1>
+            <p>Smart assistant with live access to your emails, tasks & projects</p>
         </div>
         
         <div class="chat-area" id="chatArea">
-            <div class="empty-state">
+            <div class="empty-state" id="emptyState">
                 <div class="empty-state-icon">🎤</div>
-                <p>Press and hold the microphone to start talking to Jarvis</p>
+                <p><strong>Try saying:</strong></p>
+                <p style="font-size: 13px; margin-top: 10px; line-height: 1.6;">
+                    "What emails do I have?"<br>
+                    "Add task: Call John tomorrow"<br>
+                    "What's my calendar?"<br>
+                    "Show my projects"<br>
+                    "Mark task [name] as done"
+                </p>
             </div>
         </div>
         
         <div class="browser-notice" id="browserNotice" style="display: none;">
-            ⚠️ For voice input, please use <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>. 
-            You can still type messages below.
+            ⚠️ <strong>Voice input unavailable</strong><br>
+            <span id="browserNoticeReason">Please use Google Chrome for voice input.</span><br>
+            <small>You can still type messages below, or click "Test Voice" to hear me speak.</small>
         </div>
 
         <div class="voice-controls">
@@ -434,52 +442,96 @@
         const browserNotice = document.getElementById('browserNotice');
         const waveform = document.getElementById('waveform');
         
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-            
-            recognition.onstart = () => {
-                isRecording = true;
-                micButton.classList.add('recording');
-                waveform.classList.add('active');
-                statusText.textContent = 'Listening... Speak now';
-            };
-            
-            recognition.onresult = (event) => {
-                let finalTranscript = '';
-                let interimTranscript = '';
+        // Debug info
+        console.log('Browser:', navigator.userAgent);
+        console.log('webkitSpeechRecognition:', 'webkitSpeechRecognition' in window);
+        console.log('SpeechRecognition:', 'SpeechRecognition' in window);
+        console.log('Protocol:', window.location.protocol);
+        console.log('Hostname:', window.location.hostname);
+        
+        // Check for SpeechRecognition support
+        let hasSpeechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+        console.log('hasSpeechRecognition:', hasSpeechRecognition);
+        
+        if (hasSpeechRecognition) {
+            console.log('Initializing SpeechRecognition...');
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                console.log('SpeechRecognition initialized successfully');
                 
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript;
-                    } else {
-                        interimTranscript += transcript;
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = () => {
+                    isRecording = true;
+                    micButton.classList.add('recording');
+                    waveform.classList.add('active');
+                    statusText.textContent = 'Listening... Speak now';
+                };
+                
+                recognition.onresult = (event) => {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
                     }
-                }
+                    
+                    if (finalTranscript) {
+                        addMessage('user', finalTranscript);
+                        sendToJarvis(finalTranscript);
+                    }
+                };
                 
-                if (finalTranscript) {
-                    addMessage('user', finalTranscript);
-                    sendToJarvis(finalTranscript);
-                }
-            };
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    statusText.textContent = 'Error: ' + event.error;
+                    resetMic();
+                };
+                
+                recognition.onend = () => {
+                    resetMic();
+                };
+                
+                // Set initial status
+                statusText.textContent = 'Tap and hold to speak';
+                console.log('Voice input ready');
+                
+            } catch (e) {
+                console.error('Failed to initialize SpeechRecognition:', e);
+                hasSpeechRecognition = false;
+            }
+        }
+        
+        if (!recognition) {
+            // Show specific reason why voice isn't available
+            const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            const isEdge = /Edg/.test(navigator.userAgent);
+            const isHTTPS = window.location.protocol === 'https:';
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
             
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-                statusText.textContent = 'Error: ' + event.error;
-                resetMic();
-            };
+            console.log('Voice unavailable. isChrome:', isChrome, 'isEdge:', isEdge, 'isHTTPS:', isHTTPS, 'isLocalhost:', isLocalhost);
             
-            recognition.onend = () => {
-                resetMic();
-            };
-        } else {
+            let reason = '';
+            if (!isChrome && !isEdge) {
+                reason = 'Voice input requires Google Chrome or Microsoft Edge.';
+            } else if (!isHTTPS && !isLocalhost) {
+                reason = 'Voice input requires HTTPS.';
+            } else {
+                reason = 'Microphone access may be blocked. Check Settings > Privacy > Microphone.';
+            }
+            
+            document.getElementById('browserNoticeReason').textContent = reason;
             browserNotice.style.display = 'block';
-            statusText.textContent = 'Type your message below';
-            micButton.style.opacity = '0.5';
+            statusText.textContent = 'Voice unavailable — type below';
+            micButton.style.opacity = '0.3';
             micButton.style.cursor = 'not-allowed';
         }
         
@@ -622,22 +674,59 @@
             try {
                 statusText.textContent = 'Generating voice...';
                 
+                // Try ElevenLabs first
                 const response = await fetch('/api/tts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text: text })
                 });
                 
-                if (!response.ok) {
-                    throw new Error('TTS failed');
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    playAudio(audioUrl);
+                    return;
                 }
                 
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                playAudio(audioUrl);
+                // Fallback to browser native TTS
+                console.log('ElevenLabs failed, using browser TTS');
+                useBrowserTTS(text);
                 
             } catch (err) {
                 console.error('TTS error:', err);
+                // Fallback to browser native TTS
+                useBrowserTTS(text);
+            }
+        }
+        
+        function useBrowserTTS(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // Try to find a good voice
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Victoria')) || voices[0];
+                if (preferredVoice) utterance.voice = preferredVoice;
+                
+                utterance.onstart = () => {
+                    statusText.textContent = 'Speaking...';
+                };
+                
+                utterance.onend = () => {
+                    resetMic();
+                };
+                
+                utterance.onerror = (e) => {
+                    console.error('Browser TTS error:', e);
+                    statusText.textContent = 'Voice unavailable';
+                    setTimeout(resetMic, 1000);
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
                 statusText.textContent = 'Voice unavailable (text only)';
                 setTimeout(resetMic, 2000);
             }

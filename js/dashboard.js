@@ -934,6 +934,7 @@ class JarvisDashboard {
 
     // Rendering
     renderAll() {
+        this.renderSimplifiedOverview();
         this.renderTasks();
         this.renderProjects();
         this.renderResources();
@@ -947,6 +948,197 @@ class JarvisDashboard {
         this.renderPSEPortfolio();
         this.renderMoltbook();
         this.renderAICredits();
+    }
+
+    // ==========================================
+    // SIMPLIFIED OVERVIEW - "What We're Working On"
+    // ==========================================
+
+    renderSimplifiedOverview() {
+        this.renderCurrentlyWorkingOn();
+        this.renderJustCompleted();
+        this.renderNextUp();
+        this.renderActiveProjectsSummary();
+    }
+
+    renderCurrentlyWorkingOn() {
+        const container = document.getElementById('currentlyWorkingOn');
+        if (!container) return;
+
+        // Get active tasks
+        const activeTasks = this.tasks.filter(t => t.status === 'active');
+        
+        if (activeTasks.length === 0) {
+            container.innerHTML = `
+                <div class="working-item idle">
+                    <div class="working-icon">💤</div>
+                    <div class="working-content">
+                        <div class="working-title">Waiting for assignment...</div>
+                        <div class="working-meta">Jarvis is ready to work</div>
+                        <div class="working-started">Last active: ${this.formatTime(this.lastActionTime)}</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Show the most recent active task
+        const task = activeTasks[0];
+        const progress = task.progress || 0;
+        const startedTime = task.startedAt ? new Date(task.startedAt) : new Date(task.created);
+        const duration = Math.floor((new Date() - startedTime) / 60000); // minutes
+
+        container.innerHTML = `
+            <div class="working-item active">
+                <div class="working-icon">⚡</div>
+                <div class="working-content">
+                    <div class="working-title">${this.escapeHtml(task.name)}</div>
+                    <div class="working-meta">${task.project ? `Project: ${this.escapeHtml(task.project)}` : 'Quick task'}</div>
+                    <div class="working-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <span class="progress-text">${progress}% complete</span>
+                    </div>
+                    <div class="working-started">Working for ${duration} minute${duration !== 1 ? 's' : ''}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    renderJustCompleted() {
+        const container = document.getElementById('justCompletedList');
+        if (!container) return;
+
+        // Get completed tasks from today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const completedToday = this.tasks
+            .filter(t => t.status === 'completed' && t.completed && new Date(t.completed) >= today)
+            .sort((a, b) => new Date(b.completed) - new Date(a.completed))
+            .slice(0, 5); // Show last 5
+
+        // Update badge
+        const badge = document.getElementById('completedTodayCount');
+        if (badge) {
+            badge.textContent = completedToday.length;
+            badge.style.display = completedToday.length > 0 ? 'inline' : 'none';
+        }
+
+        if (completedToday.length === 0) {
+            container.innerHTML = '<div class="empty-state">Nothing completed yet today</div>';
+            return;
+        }
+
+        container.innerHTML = completedToday.map(task => {
+            const completedTime = new Date(task.completed);
+            const timeAgo = this.getTimeAgo(completedTime);
+            
+            return `
+                <div class="completed-item">
+                    <div class="completed-icon">✓</div>
+                    <div class="completed-content">
+                        <div class="completed-title">${this.escapeHtml(task.name)}</div>
+                        <div class="completed-time">${timeAgo}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    renderNextUp() {
+        const container = document.getElementById('nextUpList');
+        if (!container) return;
+
+        // Get pending tasks
+        const pendingTasks = this.tasks
+            .filter(t => t.status === 'pending')
+            .sort((a, b) => (a.priority === 'high' ? -1 : 1))
+            .slice(0, 5); // Show next 5
+
+        // Update badge
+        const badge = document.getElementById('queuedCount');
+        if (badge) {
+            badge.textContent = pendingTasks.length;
+            badge.style.display = pendingTasks.length > 0 ? 'inline' : 'none';
+        }
+
+        if (pendingTasks.length === 0) {
+            container.innerHTML = '<div class="empty-state">Nothing in queue</div>';
+            return;
+        }
+
+        container.innerHTML = pendingTasks.map(task => {
+            const priorityIcon = task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢';
+            
+            return `
+                <div class="queue-item">
+                    <div class="queue-icon">${priorityIcon}</div>
+                    <div class="queue-content">
+                        <div class="queue-title">${this.escapeHtml(task.name)}</div>
+                        <div class="queue-priority">${task.priority || 'normal'} priority</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    renderActiveProjectsSummary() {
+        const container = document.getElementById('activeProjectsSummary');
+        if (!container) return;
+
+        // Get active projects
+        const activeProjects = this.projects
+            .filter(p => p.status === 'active' || p.status === 'in-progress')
+            .slice(0, 4); // Show top 4
+
+        if (activeProjects.length === 0) {
+            container.innerHTML = '<div class="empty-state">No active projects</div>';
+            return;
+        }
+
+        container.innerHTML = activeProjects.map(project => {
+            const progress = project.progress || 0;
+            const colorClass = progress >= 75 ? 'positive' : progress >= 40 ? 'blue' : 'yellow';
+            
+            return `
+                <div class="project-summary-card">
+                    <div class="project-summary-icon">🚀</div>
+                    <div class="project-summary-info">
+                        <div class="project-summary-name">${this.escapeHtml(project.name)}</div>
+                        <div class="project-summary-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill ${colorClass}" style="width: ${progress}%"></div>
+                            </div>
+                            <span class="progress-text">${progress}%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Helper: Get time ago string
+    getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${diffDays}d ago`;
+    }
+
+    // Helper: Escape HTML
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     renderAICredits() {

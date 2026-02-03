@@ -1,6 +1,46 @@
 {
   "tasks": [
     {
+      "id": "1770052714257",
+      "title": "test voice task creation",
+      "description": "Voice created",
+      "status": "pending",
+      "priority": "medium",
+      "assignee": "Jarvis",
+      "created": "2026-02-02T17:18:34.257Z",
+      "updated": "2026-02-02T17:18:34.257Z"
+    },
+    {
+      "id": "1770051692695",
+      "title": "test from voice",
+      "description": "Created via voice",
+      "status": "pending",
+      "priority": "medium",
+      "assignee": "Jarvis",
+      "created": "2026-02-02T17:01:32.695Z",
+      "updated": "2026-02-02T17:01:32.695Z"
+    },
+    {
+      "id": "1738492800",
+      "title": "Update Dashboard Data Sync",
+      "description": "Fix email counts, add missing projects (voice chat, marketing grader), sync worklog",
+      "status": "completed",
+      "priority": "high",
+      "assignee": "Jarvis",
+      "created": "2026-02-02T07:00:00.000Z",
+      "updated": "2026-02-02T07:15:00.000Z"
+    },
+    {
+      "id": "1738492500",
+      "title": "Dashboard Server Maintenance",
+      "description": "Restarted dashboard service after it went down, verified voice chat accessibility",
+      "status": "completed",
+      "priority": "high",
+      "assignee": "Jarvis",
+      "created": "2026-02-02T06:50:00.000Z",
+      "updated": "2026-02-02T07:05:00.000Z"
+    },
+    {
       "id": "1738452000",
       "title": "Monitor & Maintain Systems",
       "description": "Heartbeat checks, email monitoring, calendar awareness",
@@ -8,7 +48,7 @@
       "priority": "high",
       "assignee": "Jarvis",
       "created": "2026-02-01T08:00:00.000Z",
-      "updated": "2026-02-01T23:00:00.000Z"
+      "updated": "2026-02-02T07:15:00.000Z"
     },
     {
       "id": "1738452100",
@@ -27,16 +67,26 @@
       "name": "ThinkNLocal",
       "goal": "1,000 partners @ $150-200/mo",
       "status": "active",
-      "progress": 15,
-      "current": "150 partners"
+      "progress": 20,
+      "current": "150 partners | Marketing Grader tool live",
+      "subprojects": [
+        {
+          "id": "marketing-grader",
+          "name": "Local Marketing Grader",
+          "goal": "Restaurant/marketing assessment tool",
+          "status": "completed",
+          "progress": 100,
+          "current": "Live at http://localhost:3001"
+        }
+      ]
     },
     {
       "id": "aqulos",
       "name": "AQULOS Rebuild",
       "goal": "AI + automation growth agency",
       "status": "in-progress",
-      "progress": 35,
-      "current": "Core systems operational"
+      "progress": 45,
+      "current": "Voice chat deployed"
     },
     {
       "id": "ph-ventures",
@@ -45,6 +95,14 @@
       "status": "in-progress",
       "progress": 60,
       "current": "Multi-business rollout"
+    },
+    {
+      "id": "jarvis-voice",
+      "name": "Jarvis Voice Chat",
+      "goal": "Real-time voice interaction system",
+      "status": "completed",
+      "progress": 100,
+      "current": "Live at https://localhost:3443/voice"
     }
   ],
   "resources": [
@@ -55,7 +113,7 @@
       "type": "tool"
     },
     {
-      "id": "2", 
+      "id": "2",
       "name": "OpenClaw Gateway",
       "url": "http://localhost:18789",
       "type": "tool"
@@ -65,9 +123,39 @@
       "name": "Google Workspace",
       "url": "https://workspace.google.com",
       "type": "service"
+    },
+    {
+      "id": "4",
+      "name": "OpenClaw Docs",
+      "url": "https://docs.openclaw.ai/",
+      "type": "reference"
     }
   ],
   "workLog": [
+    {
+      "id": "1770052714258",
+      "text": "Voice: Created \"test voice task creation\"",
+      "type": "task",
+      "timestamp": "2026-02-02T17:18:34.258Z"
+    },
+    {
+      "id": "1770051692695",
+      "text": "Voice: Created task \"test from voice\"",
+      "type": "task",
+      "timestamp": "2026-02-02T17:01:32.695Z"
+    },
+    {
+      "id": "1769985600000",
+      "text": "Dashboard restarted and data updated - 9 unread emails, projects synced",
+      "type": "system",
+      "timestamp": "2026-02-02T07:15:00.000Z"
+    },
+    {
+      "id": "1769982000000",
+      "text": "Multiple Gmail heartbeat checks - flagged security alerts and Link verification",
+      "type": "email",
+      "timestamp": "2026-02-02T06:15:00.000Z"
+    },
     {
       "id": "1769946000000",
       "text": "Slack bot connection restored - gateway restarted",
@@ -91,27 +179,40 @@
   "delegations": [],
   "phVentures": {
     "businesses": [
-      {"name": "Dorm/Aparment", "status": "planning", "progress": 40},
-      {"name": "Farm", "status": "planning", "progress": 30},
-      {"name": "F&B", "status": "planning", "progress": 25}
+      {
+        "name": "Dorm/Aparment",
+        "status": "planning",
+        "progress": 40
+      },
+      {
+        "name": "Farm",
+        "status": "planning",
+        "progress": 30
+      },
+      {
+        "name": "F&B",
+        "status": "planning",
+        "progress": 25
+      }
     ],
     "team": [],
     "checkIns": []
   },
   "weeklyReviews": [],
   "emailStatus": {
-    "unread": 6,
-    "lastChecked": "2026-02-01T23:25:00.000Z",
+    "unread": 9,
+    "lastChecked": "2026-02-02T07:15:00.000Z",
     "alerts": [
-      "X login from ChromeDesktop on Mac",
-      "Google security alert",
-      "Google Cloud Free Trial welcome"
+      "Link - Verify your email (account setup)",
+      "X - New login from ChromeDesktop on Mac",
+      "Google - Security alert",
+      "Eleven Labs - Receipt #2237-8032-6972"
     ]
   },
   "calendarStatus": {
     "nextEvent": null,
     "eventsToday": 0,
-    "lastChecked": "2026-02-01T23:25:00.000Z"
+    "lastChecked": "2026-02-02T07:15:00.000Z"
   },
   "aiCredits": {
     "currentSession": {

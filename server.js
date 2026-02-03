@@ -10,331 +10,171 @@ const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'rSCy45jxNeuvjsxuOKbl';
+const GATEWAY_TOKEN = 'ac8d1303479b4f4ffd8511591955e10326cb281a650fe57867c9f2213d9ac9d5';
 
-// CORS headers for API requests
+// Store responses from agent
+const agentResponses = new Map();
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
     next();
 });
 
-// Serve static files
 app.use(express.static(__dirname));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
 
-// API endpoint for data persistence
-app.get('/api/data', (req, res) => {
-    const dataPath = path.join(__dirname, 'data', 'dashboard-data.json');
-    if (fs.existsSync(dataPath)) {
-        res.json(JSON.parse(fs.readFileSync(dataPath, 'utf8')));
-    } else {
-        res.json({ tasks: [], projects: [], resources: [], workLog: [] });
-    }
-});
+// ============================================
+// AGENT WEBHOOK - Receives responses from AI agent
+// ============================================
 
-app.post('/api/data', (req, res) => {
-    const dataDir = path.join(__dirname, 'data');
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+app.post('/api/agent-response', (req, res) => {
+    const { requestId, response } = req.body;
+    console.log('Agent response:', requestId, response?.substring(0, 100));
+    
+    if (requestId) {
+        agentResponses.set(requestId, {
+            text: response,
+            timestamp: Date.now()
+        });
     }
-    const dataPath = path.join(dataDir, 'dashboard-data.json');
-    fs.writeFileSync(dataPath, JSON.stringify(req.body, null, 2));
+    
     res.json({ success: true });
 });
 
-// ElevenLabs TTS endpoint
-app.post('/api/tts', async (req, res) => {
-    if (!ELEVENLABS_API_KEY) {
-        return res.status(500).json({ error: 'ElevenLabs API key not configured' });
-    }
+// ============================================
+// MAIN CHAT - Routes to jarvis-voice-chat agent
+// ============================================
 
-    const { text, voiceId = ELEVENLABS_VOICE_ID } = req.body;
-    
-    if (!text) {
-        return res.status(400).json({ error: 'Text is required' });
-    }
-
-    try {
-        const options = {
-            hostname: 'api.elevenlabs.io',
-            port: 443,
-            path: `/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=3&output_format=mp3_44100_128`,
-            method: 'POST',
-            headers: {
-                'Accept': 'audio/mpeg',
-                'Content-Type': 'application/json',
-                'xi-api-key': ELEVENLABS_API_KEY
-            }
-        };
-
-        const ttsReq = https.request(options, (ttsRes) => {
-            if (ttsRes.statusCode !== 200) {
-                let errorData = '';
-                ttsRes.on('data', chunk => errorData += chunk);
-                ttsRes.on('end', () => {
-                    console.error('ElevenLabs error:', errorData);
-                    res.status(ttsRes.statusCode).json({ error: 'TTS generation failed' });
-                });
-                return;
-            }
-
-            res.setHeader('Content-Type', 'audio/mpeg');
-            res.setHeader('Cache-Control', 'no-cache');
-            ttsRes.pipe(res);
-        });
-
-        ttsReq.on('error', (err) => {
-            console.error('TTS request error:', err);
-            res.status(500).json({ error: 'TTS request failed' });
-        });
-
-        ttsReq.write(JSON.stringify({
-            text: text,
-            model_id: 'eleven_turbo_v2_5',
-            voice_settings: {
-                stability: 0.5,
-                similarity_boost: 0.75
-            }
-        }));
-
-        ttsReq.end();
-    } catch (err) {
-        console.error('TTS error:', err);
-        res.status(500).json({ error: 'Internal TTS error' });
-    }
-});
-
-// Get available voices
-app.get('/api/voices', async (req, res) => {
-    if (!ELEVENLABS_API_KEY) {
-        return res.json({ voices: [], error: 'ElevenLabs not configured' });
-    }
-
-    try {
-        const options = {
-            hostname: 'api.elevenlabs.io',
-            port: 443,
-            path: '/v1/voices',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'xi-api-key': ELEVENLABS_API_KEY
-            }
-        };
-
-        const voicesReq = https.request(options, (voicesRes) => {
-            let data = '';
-            voicesRes.on('data', chunk => data += chunk);
-            voicesRes.on('end', () => {
-                try {
-                    const parsed = JSON.parse(data);
-                    res.json({ voices: parsed.voices || [] });
-                } catch (e) {
-                    res.json({ voices: [], error: 'Failed to parse voices' });
-                }
-            });
-        });
-
-        voicesReq.on('error', () => {
-            res.json({ voices: [], error: 'Failed to fetch voices' });
-        });
-
-        voicesReq.end();
-    } catch (err) {
-        res.json({ voices: [], error: err.message });
-    }
-});
-
-// Main route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Voice chat route
-app.get('/voice', (req, res) => {
-    res.sendFile(path.join(__dirname, 'voice.html'));
-});
-
-// Chat API - forward to OpenClaw gateway
 app.post('/api/chat', async (req, res) => {
-    const { message } = req.body;
-
+    const { message, userId = 'kris' } = req.body;
+    
     if (!message) {
-        return res.status(400).json({ error: 'Message is required' });
+        return res.json({ text: "I didn't catch that.", timestamp: new Date().toISOString() });
     }
 
-    try {
-        // Connect to OpenClaw gateway
-        const gatewayToken = 'ac8d1303479b4f4ffd8511591955e10326cb281a650fe57867c9f2213d9ac9d5';
+    const requestId = 'voice_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const timestamp = new Date().toISOString();
 
-        // Make request to OpenClaw gateway
-        const options = {
+    try {
+        // Send to jarvis-voice-chat agent via OpenClaw gateway
+        const agentReq = http.request({
             hostname: '127.0.0.1',
             port: 18789,
-            path: '/v1/chat',
+            path: '/v1/sessions/send',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${gatewayToken}`
+                'Authorization': `Bearer ${GATEWAY_TOKEN}`
             }
-        };
-
-        const gatewayReq = http.request(options, (gatewayRes) => {
+        }, (agentRes) => {
             let data = '';
-            gatewayRes.on('data', chunk => data += chunk);
-            gatewayRes.on('end', () => {
-                try {
-                    const response = JSON.parse(data);
-                    // Check if we got a valid response with text
-                    if (response.text || response.message) {
-                        res.json({
-                            text: response.text || response.message,
-                            timestamp: new Date().toISOString()
-                        });
-                    } else {
-                        throw new Error('Empty response from gateway');
-                    }
-                } catch (e) {
-                    // Gateway returned error or no chat endpoint - use smart fallback
-                    const lowerMsg = message.toLowerCase();
-                    let responseText;
+            agentRes.on('data', chunk => data += chunk);
+            agentRes.on('end', () => {
+                console.log('Agent request sent:', requestId);
+            });
+        });
 
-                    if (lowerMsg.includes('time') || lowerMsg.includes('what time')) {
-                        const now = new Date();
-                        const timeString = now.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                            timeZone: 'America/Los_Angeles'
-                        });
-                        const dateString = now.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        responseText = `It's ${timeString} on ${dateString}.`;
-                    } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi ')) {
-                        responseText = "Hello Kris! I'm Jarvis, your AI assistant. I'm online and ready to help you.";
-                    } else if (lowerMsg.includes('how are you') || lowerMsg.includes('status')) {
-                        responseText = "I'm fully operational and ready to assist! All systems are running smoothly.";
-                    } else if (lowerMsg.includes('calendar') || lowerMsg.includes('schedule')) {
-                        responseText = "From my last check, you have no events scheduled for the next 24 hours. Your calendar is clear.";
-                    } else if (lowerMsg.includes('email') || lowerMsg.includes('inbox')) {
-                        responseText = "You currently have 9 unread emails. Most are routine notifications.";
-                    } else {
-                        responseText = `You said: "${message}". I'm Jarvis, your AI assistant running in voice mode.`;
-                    }
+        agentReq.on('error', (err) => {
+            console.error('Agent error:', err);
+        });
 
-                    res.json({
-                        text: responseText,
-                        timestamp: new Date().toISOString()
-                    });
+        // Send message with webhook callback instruction
+        agentReq.write(JSON.stringify({
+            label: 'jarvis-voice-chat',
+            message: `Kris says: "${message}"\n\nRespond conversationally. When done, send your response to:\nPOST http://localhost:${PORT}/api/agent-response\nBody: {"requestId": "${requestId}", "response": "your response here"}`,
+            timeoutSeconds: 60
+        }));
+        agentReq.end();
+
+        // Wait for agent response (up to 60 seconds)
+        const responsePromise = new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (agentResponses.has(requestId)) {
+                    clearInterval(checkInterval);
+                    const resp = agentResponses.get(requestId);
+                    agentResponses.delete(requestId);
+                    resolve(resp.text);
                 }
-            });
+            }, 500);
+
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                if (agentResponses.has(requestId)) {
+                    const resp = agentResponses.get(requestId);
+                    agentResponses.delete(requestId);
+                    resolve(resp.text);
+                } else {
+                    resolve("I'm working on that. Give me a moment to complete it.");
+                }
+            }, 60000);
         });
 
-        gatewayReq.on('error', (err) => {
-            console.error('Gateway error:', err.message);
-
-            // Smart fallback responses for common questions
-            const lowerMsg = message.toLowerCase();
-            let responseText;
-
-            if (lowerMsg.includes('time') || lowerMsg.includes('what time')) {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                    timeZone: 'America/Los_Angeles'
-                });
-                const dateString = now.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                responseText = `It's ${timeString} on ${dateString}. I'm Jarvis, your AI assistant.`;
-            } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi ')) {
-                responseText = "Hello Kris! I'm Jarvis, your AI assistant. I'm online and ready to help you. What can I do for you?";
-            } else if (lowerMsg.includes('how are you') || lowerMsg.includes('status')) {
-                responseText = "I'm fully operational and ready to assist! All systems are running smoothly. How can I help you today?";
-            } else if (lowerMsg.includes('calendar') || lowerMsg.includes('schedule')) {
-                responseText = "I can check your calendar. From my last check, you have no events scheduled for the next 24 hours. Your calendar is clear.";
-            } else if (lowerMsg.includes('email') || lowerMsg.includes('inbox')) {
-                responseText = "You currently have 9 unread emails. Most are routine notifications. There are a few security alerts from X and Google to review when you have a moment.";
-            } else {
-                // Generic fallback
-                responseText = `You said: "${message}". I'm Jarvis, your AI assistant. The voice pipeline is working perfectly! For more complex queries, please use the Telegram or Slack channels while I finish the full integration.`;
-            }
-
-            res.json({
-                text: responseText,
-                timestamp: new Date().toISOString()
-            });
+        const agentText = await responsePromise;
+        
+        return res.json({
+            text: agentText,
+            timestamp: new Date().toISOString(),
+            source: 'voice-agent'
         });
-
-        gatewayReq.write(JSON.stringify({ message }));
-        gatewayReq.end();
 
     } catch (err) {
         console.error('Chat error:', err);
-        res.status(500).json({ error: 'Failed to process message' });
+        return res.json({
+            text: "I'm having trouble connecting. Let me try again.",
+            timestamp
+        });
     }
 });
 
-// Check for SSL certificates
+// ============================================
+// TTS
+// ============================================
+
+app.post('/api/tts', (req, res) => {
+    if (!ELEVENLABS_API_KEY) return res.status(500).json({ error: 'TTS not configured' });
+    
+    const { text, voiceId = ELEVENLABS_VOICE_ID } = req.body;
+    if (!text) return res.status(400).json({ error: 'Text required' });
+
+    const options = {
+        hostname: 'api.elevenlabs.io', port: 443,
+        path: `/v1/text-to-speech/${voiceId}/stream`,
+        method: 'POST',
+        headers: {
+            'Accept': 'audio/mpeg',
+            'Content-Type': 'application/json',
+            'xi-api-key': ELEVENLABS_API_KEY
+        }
+    };
+
+    const ttsReq = https.request(options, (ttsRes) => {
+        if (ttsRes.statusCode !== 200) return res.status(500).json({ error: 'TTS failed' });
+        res.setHeader('Content-Type', 'audio/mpeg');
+        ttsRes.pipe(res);
+    });
+
+    ttsReq.on('error', () => res.status(500).json({ error: 'TTS error' }));
+    ttsReq.write(JSON.stringify({ text, model_id: 'eleven_turbo_v2' }));
+    ttsReq.end();
+});
+
+// Static
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/voice', (req, res) => res.sendFile(path.join(__dirname, 'voice.html')));
+
+// Start
 const certPath = path.join(__dirname, 'certs', 'localhost.crt');
 const keyPath = path.join(__dirname, 'certs', 'localhost.key');
 const hasSSL = fs.existsSync(certPath) && fs.existsSync(keyPath);
 
 if (hasSSL) {
-    // Start HTTPS server for voice/mic access
-    const sslOptions = {
-        key: fs.readFileSync(keyPath),
-        cert: fs.readFileSync(certPath)
-    };
-    
-    https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
-        console.log(`
-╔════════════════════════════════════════════════════════╗
-║                                                        ║
-║     🤖 JARVIS AQULOS DASHBOARD v2.0.0                 ║
-║                                                        ║
-║     Dark Mode Operating System                         ║
-║     SSL: ENABLED ✅                                    ║
-║                                                        ║
-║     HTTP:  http://localhost:${PORT}                         ║
-║     HTTPS: https://localhost:${HTTPS_PORT} 👈 Use for voice        ║
-║                                                        ║
-║     Voice Chat: https://localhost:${HTTPS_PORT}/voice            ║
-║                                                        ║
-╚════════════════════════════════════════════════════════╝
-        `);
-    });
-} else {
-    console.log('⚠️  SSL certificates not found. Voice features will be limited.');
-    console.log('   Run: node generate-certs.js to create SSL certificates.\n');
+    https.createServer({ key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath) }, app)
+        .listen(HTTPS_PORT, () => console.log(`🔒 https://localhost:${HTTPS_PORT}/voice`));
 }
 
-// Always start HTTP server
-app.listen(PORT, () => {
-    if (!hasSSL) {
-        console.log(`
-╔════════════════════════════════════════════════════════╗
-║                                                        ║
-║     🤖 JARVIS AQULOS DASHBOARD v2.0.0                 ║
-║                                                        ║
-║     Dark Mode Operating System                         ║
-║     Status: ONLINE                                     ║
-║                                                        ║
-║     Dashboard: http://localhost:${PORT}                      ║
-║     Voice Chat: http://localhost:${PORT}/voice               ║
-║                                                        ║
-╚════════════════════════════════════════════════════════╝
-        `);
-    }
-});
+app.listen(PORT, () => console.log(`🎙️  http://localhost:${PORT}/voice`));
+
+console.log('🤖 Voice Agent Server - Connected to jarvis-voice-chat');

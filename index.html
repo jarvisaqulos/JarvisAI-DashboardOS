@@ -154,136 +154,77 @@
 
         <!-- Main Content -->
         <main class="content">
-            <!-- Overview Section -->
+            <!-- Overview Section - Simplified "What We're Working On" -->
             <section id="overview" class="section active">
                 <div class="section-header">
-                    <h1>System Overview</h1>
-                    <p class="subtitle">Real-time operating status</p>
+                    <h1>🧠 What We're Working On</h1>
+                    <p class="subtitle">Real-time task & project status</p>
                 </div>
 
-                <!-- Status Panel -->
-                <div class="panel status-panel">
+                <!-- Currently Active -->
+                <div class="panel working-now-panel">
                     <div class="panel-header">
-                        <h2>🔔 System Status</h2>
+                        <h2>⏳ Currently Working On</h2>
                         <span class="live-indicator">LIVE</span>
                     </div>
                     <div class="panel-content">
-                        <div class="status-grid">
-                            <div class="status-card" id="currentStateCard">
-                                <div class="status-label">Current State</div>
-                                <div class="status-value" id="currentState">IDLE</div>
-                                <div class="status-sublabel">Ready for work</div>
-                            </div>
-                            <div class="status-card">
-                                <div class="status-label">Jarvis Working On</div>
-                                <div class="status-value" id="activeTask">Nothing</div>
-                                <div class="status-sublabel" id="taskProgress">Ready for assignment</div>
-                            </div>
-                            <div class="status-card">
-                                <div class="status-label">Last Action</div>
-                                <div class="status-value" id="lastAction">System init</div>
-                                <div class="status-sublabel" id="lastActionTime">Just now</div>
-                            </div>
-                            <div class="status-card">
-                                <div class="status-label">Next Meeting</div>
-                                <div class="status-value" id="nextMeeting">--</div>
-                                <div class="status-sublabel" id="nextMeetingTime">No meetings scheduled</div>
+                        <div id="currentlyWorkingOn" class="working-now-display">
+                            <div class="working-item active">
+                                <div class="working-icon">🤖</div>
+                                <div class="working-content">
+                                    <div class="working-title" id="currentWorkTitle">Waiting for assignment...</div>
+                                    <div class="working-meta" id="currentWorkMeta">Jarvis is ready</div>
+                                    <div class="working-progress" id="currentWorkProgress" style="display: none;">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="currentWorkProgressBar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="progress-text" id="currentWorkProgressText">0%</span>
+                                    </div>
+                                    <div class="working-started" id="currentWorkStarted"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dashboard Grid -->
-                <div class="dashboard-grid">
-                    <!-- Active Tasks Summary -->
+                <!-- Two Column Layout -->
+                <div class="overview-grid">
+                    <!-- Left: Just Completed -->
                     <div class="panel">
                         <div class="panel-header">
-                            <h2>🧩 Jarvis Active Tasks</h2>
-                            <button class="btn-small" onclick="dashboard.switchSection('tasks')">View All</button>
+                            <h2>✅ Just Completed</h2>
+                            <span class="count-badge" id="completedTodayCount">0</span>
                         </div>
                         <div class="panel-content">
-                            <div id="activeTasksList" class="task-list">
-                                <div class="empty-state">No active tasks</div>
+                            <div id="justCompletedList" class="completed-list">
+                                <div class="empty-state">Nothing completed yet today</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Project Summary -->
+                    <!-- Right: Next Up / Queue -->
                     <div class="panel">
                         <div class="panel-header">
-                            <h2>📂 Recent Projects</h2>
-                            <button class="btn-small" onclick="dashboard.switchSection('projects')">View All</button>
+                            <h2>📋 Next Up</h2>
+                            <span class="count-badge" id="queuedCount">0</span>
                         </div>
                         <div class="panel-content">
-                            <div id="recentProjectsList" class="project-list">
-                                <div class="empty-state">No projects yet</div>
+                            <div id="nextUpList" class="queue-list">
+                                <div class="empty-state">Nothing in queue</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Goals Preview -->
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2>🎯 Goal Progress</h2>
-                            <button class="btn-small" onclick="dashboard.switchSection('goals')">View All</button>
-                        </div>
-                        <div class="panel-content">
-                            <div id="goalsPreview" class="goals-list">
-                                <div class="goal-item">
-                                    <div class="goal-name">ThinkNLocal Scale</div>
-                                    <div class="goal-progress">
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: 15%"></div>
-                                        </div>
-                                        <span class="progress-text">150/1000 partners</span>
-                                    </div>
-                                </div>
-                                <div class="goal-item">
-                                    <div class="goal-name">AQULOS Rebuild</div>
-                                    <div class="goal-progress">
-                                        <div class="progress-bar">
-                                            <div class="progress-fill blue" style="width: 35%"></div>
-                                        </div>
-                                        <span class="progress-text">In progress</span>
-                                    </div>
-                                </div>
-                                <div class="goal-item">
-                                    <div class="goal-name">PH Ventures</div>
-                                    <div class="goal-progress">
-                                        <div class="progress-bar">
-                                            <div class="progress-fill yellow" style="width: 60%"></div>
-                                        </div>
-                                        <span class="progress-text">Operational</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Bottom: Active Projects Summary -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>🚀 Active Projects</h2>
+                        <button class="btn-small" onclick="dashboard.switchSection('projects')">View All</button>
                     </div>
-
-                    <!-- Quick Stats -->
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2>📊 Quick Stats</h2>
-                        </div>
-                        <div class="panel-content">
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <div class="stat-value" id="statTasksCompleted">0</div>
-                                    <div class="stat-label">Tasks Done</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="statProjectsActive">0</div>
-                                    <div class="stat-label">Active Projects</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="statResources">0</div>
-                                    <div class="stat-label">Resources</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="statWorkLog">0</div>
-                                    <div class="stat-label">Work Log Entries</div>
-                                </div>
-                            </div>
+                    <div class="panel-content">
+                        <div id="activeProjectsSummary" class="projects-summary">
+                            <div class="empty-state">No active projects</div>
                         </div>
                     </div>
                 </div>
