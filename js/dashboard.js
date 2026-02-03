@@ -1323,44 +1323,49 @@ class JarvisDashboard {
         const recentList = document.getElementById('recentProjectsList');
         
         if (this.projects.length === 0) {
-            container.innerHTML = '<div class="empty-state large">No projects yet. Create your first project to start tracking.</div>';
-            recentList.innerHTML = '<div class="empty-state">No projects yet</div>';
+            if (container) container.innerHTML = '<div class="empty-state large">No projects yet. Create your first project to start tracking.</div>';
+            if (recentList) recentList.innerHTML = '<div class="empty-state">No projects yet</div>';
             return;
         }
         
-        container.innerHTML = this.projects.map(p => `
-            <div class="project-card">
-                <div class="project-header">
-                    <div class="project-icon">${p.icon}</div>
-                    <div class="project-info">
-                        <h3>${p.name}</h3>
-                        <p>${p.description || 'No description'}</p>
+        if (container) {
+            container.innerHTML = this.projects.map(p => `
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon">${p.icon}</div>
+                        <div class="project-info">
+                            <h3>${p.name}</h3>
+                            <p>${p.description || 'No description'}</p>
+                        </div>
+                    </div>
+                    <div class="project-stats">
+                        <span class="stat">Tasks: ${p.tasks}</span>
+                        <span class="stat">Files: ${p.files.length}</span>
+                        <span class="stat">Links: ${p.links.length}</span>
+                    </div>
+                    <div class="project-links">
+                        ${p.links.map(l => `<a href="${l.url}" target="_blank">${l.name}</a>`).join(' • ')}
                     </div>
                 </div>
-                <div class="project-stats">
-                    <span class="stat">Tasks: ${p.tasks}</span>
-                    <span class="stat">Files: ${p.files.length}</span>
-                    <span class="stat">Links: ${p.links.length}</span>
-                </div>
-                <div class="project-links">
-                    ${p.links.map(l => `<a href="${l.url}" target="_blank">${l.name}</a>`).join(' • ')}
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
         
-        recentList.innerHTML = this.projects.slice(0, 3).map(p => `
-            <div class="task-item" style="cursor: default;">
-                <div class="task-info">
-                    <div class="task-name">${p.icon} ${p.name}</div>
-                    <div class="task-meta">${p.description || 'No description'}</div>
+        if (recentList) {
+            recentList.innerHTML = this.projects.slice(0, 3).map(p => `
+                <div class="task-item" style="cursor: default;">
+                    <div class="task-info">
+                        <div class="task-name">${p.icon} ${p.name}</div>
+                        <div class="task-meta">${p.description || 'No description'}</div>
+                    </div>
+                    <span class="task-status ${p.status}">${p.status}</span>
                 </div>
-                <span class="task-status ${p.status}">${p.status}</span>
-            </div>
-        `).join('');
+            `).join('');
+        }
     }
 
     renderResources() {
         const container = document.getElementById('resourcesList');
+        if (!container) return;
         
         if (this.resources.length === 0) {
             container.innerHTML = '<div class="empty-state">No resources saved yet</div>';
@@ -1383,6 +1388,7 @@ class JarvisDashboard {
 
     renderWorkLog() {
         const container = document.getElementById('workLog');
+        if (!container) return;
         
         if (this.workLog.length === 0) {
             container.innerHTML = '<div class="empty-state">No activity yet</div>';
