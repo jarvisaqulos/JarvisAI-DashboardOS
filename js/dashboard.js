@@ -736,20 +736,24 @@ class JarvisDashboard {
         
         const config = statusConfig[this.status];
         
-        indicator.className = 'status-indicator ' + config.class;
-        text.textContent = config.text;
-        currentState.textContent = config.text;
+        if (indicator) indicator.className = 'status-indicator ' + config.class;
+        if (text) text.textContent = config.text;
+        if (currentState) currentState.textContent = config.text;
         
         // Update sublabel
-        const sublabel = currentStateCard.querySelector('.status-sublabel');
-        if (sublabel) sublabel.textContent = config.sublabel;
+        if (currentStateCard) {
+            const sublabel = currentStateCard.querySelector('.status-sublabel');
+            if (sublabel) sublabel.textContent = config.sublabel;
+        }
         
         // Update logo pulse
         const logoIcon = document.querySelector('.logo-icon');
-        if (this.status === 'active') {
-            logoIcon.style.animation = 'pulse 1s infinite';
-        } else {
-            logoIcon.style.animation = 'pulse 2s infinite';
+        if (logoIcon) {
+            if (this.status === 'active') {
+                logoIcon.style.animation = 'pulse 1s infinite';
+            } else {
+                logoIcon.style.animation = 'pulse 2s infinite';
+            }
         }
     }
 
@@ -767,7 +771,8 @@ class JarvisDashboard {
             minute: '2-digit',
             second: '2-digit'
         });
-        document.getElementById('timestamp').textContent = timeStr;
+        const timestampEl = document.getElementById('timestamp');
+        if (timestampEl) timestampEl.textContent = timeStr;
         
         // Update last action relative time
         this.updateLastActionTime();
