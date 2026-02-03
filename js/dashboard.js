@@ -1258,10 +1258,15 @@ class JarvisDashboard {
         const completed = this.tasks.filter(t => t.status === 'completed');
         
         // Update counts
-        document.getElementById('taskBadge').textContent = active.length;
-        document.getElementById('activeCount').textContent = active.length;
-        document.getElementById('pendingCount').textContent = pending.length;
-        document.getElementById('completedCount').textContent = completed.length;
+        const taskBadgeEl = document.getElementById('taskBadge');
+        const activeCountEl = document.getElementById('activeCount');
+        const pendingCountEl = document.getElementById('pendingCount');
+        const completedCountEl = document.getElementById('completedCount');
+        
+        if (taskBadgeEl) taskBadgeEl.textContent = active.length;
+        if (activeCountEl) activeCountEl.textContent = active.length;
+        if (pendingCountEl) pendingCountEl.textContent = pending.length;
+        if (completedCountEl) completedCountEl.textContent = completed.length;
         
         // Update active task display (with null checks for elements that may not exist)
         const activeTaskEl = document.getElementById('activeTask');
@@ -1274,11 +1279,11 @@ class JarvisDashboard {
             if (taskProgressEl) taskProgressEl.textContent = '--';
         }
         
-        // Render lists
-        activeList.innerHTML = active.length ? active.map(t => this.renderTaskItem(t)).join('') : '<div class="empty-state">Jarvis is ready - assign a task to get started</div>';
-        activeFull.innerHTML = active.length ? active.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No active tasks - Jarvis is ready for assignment</div>';
-        pendingFull.innerHTML = pending.length ? pending.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No queued tasks</div>';
-        completedFull.innerHTML = completed.length ? completed.slice(0, 10).map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No completed tasks yet</div>';
+        // Render lists (with null checks)
+        if (activeList) activeList.innerHTML = active.length ? active.map(t => this.renderTaskItem(t)).join('') : '<div class="empty-state">Jarvis is ready - assign a task to get started</div>';
+        if (activeFull) activeFull.innerHTML = active.length ? active.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No active tasks - Jarvis is ready for assignment</div>';
+        if (pendingFull) pendingFull.innerHTML = pending.length ? pending.map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No queued tasks</div>';
+        if (completedFull) completedFull.innerHTML = completed.length ? completed.slice(0, 10).map(t => this.renderTaskDetailed(t)).join('') : '<div class="empty-state">No completed tasks yet</div>';
     }
 
     renderTaskItem(task) {
