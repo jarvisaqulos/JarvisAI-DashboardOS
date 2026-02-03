@@ -1162,22 +1162,29 @@ class JarvisDashboard {
         const credits = this.aiCredits;
 
         // Update budget cards
-        document.getElementById('aiBudget').textContent = `$${credits.monthlyBudget}`;
-        document.getElementById('aiSpent').textContent = `$${credits.spentThisMonth}`;
-        document.getElementById('aiRemaining').textContent = `$${credits.monthlyBudget - credits.spentThisMonth}`;
-        document.getElementById('aiThreshold').textContent = `$${credits.alertThreshold}`;
+        const aiBudgetEl = document.getElementById('aiBudget');
+        const aiSpentEl = document.getElementById('aiSpent');
+        const aiRemainingEl = document.getElementById('aiRemaining');
+        const aiThresholdEl = document.getElementById('aiThreshold');
+        const aiSpentPctEl = document.getElementById('aiSpentPct');
+        
+        if (aiBudgetEl) aiBudgetEl.textContent = `$${credits.monthlyBudget}`;
+        if (aiSpentEl) aiSpentEl.textContent = `$${credits.spentThisMonth}`;
+        if (aiRemainingEl) aiRemainingEl.textContent = `$${credits.monthlyBudget - credits.spentThisMonth}`;
+        if (aiThresholdEl) aiThresholdEl.textContent = `$${credits.alertThreshold}`;
 
         const spentPct = Math.round((credits.spentThisMonth / credits.monthlyBudget) * 100);
-        document.getElementById('aiSpentPct').textContent = `${spentPct}% used`;
+        if (aiSpentPctEl) aiSpentPctEl.textContent = `${spentPct}% used`;
 
         // Color-code based on usage
-        const spentEl = document.getElementById('aiSpent');
-        if (spentPct >= 75) {
-            spentEl.style.color = 'var(--accent-red)';
-        } else if (spentPct >= 50) {
-            spentEl.style.color = 'var(--accent-yellow)';
-        } else {
-            spentEl.style.color = 'var(--accent-green)';
+        if (aiSpentEl) {
+            if (spentPct >= 75) {
+                aiSpentEl.style.color = 'var(--accent-red)';
+            } else if (spentPct >= 50) {
+                aiSpentEl.style.color = 'var(--accent-yellow)';
+            } else {
+                aiSpentEl.style.color = 'var(--accent-green)';
+            }
         }
 
         // Update current session if available
