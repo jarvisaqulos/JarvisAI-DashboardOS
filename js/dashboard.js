@@ -734,6 +734,18 @@ class JarvisDashboard {
         }
     }
 
+    // Clear all tasks (useful for resetting)
+    clearAllTasks() {
+        if (confirm('Clear all tasks? This will delete all active, pending, and completed tasks.')) {
+            const count = this.tasks.length;
+            this.tasks = [];
+            this.currentWork = null;
+            this.saveData();
+            this.renderAll();
+            this.addLogEntry(`Cleared all ${count} tasks`, 'system');
+        }
+    }
+
     updateStatusUI() {
         const indicator = document.getElementById('statusIndicator');
         const text = document.getElementById('statusText');
@@ -1046,6 +1058,7 @@ class JarvisDashboard {
             const progress = this.currentWork.progress || 0;
             const startedTime = new Date(this.currentWork.startedAt);
             const duration = Math.floor((new Date() - startedTime) / 60000); // minutes
+            const durationText = this.formatDuration(duration);
 
             container.innerHTML = `
                 <div class="working-item active">
@@ -1059,7 +1072,7 @@ class JarvisDashboard {
                             </div>
                             <span class="progress-text">${progress}% complete</span>
                         </div>
-                        <div class="working-started">Working for ${duration} minute${duration !== 1 ? 's' : ''}</div>
+                        <div class="working-started">Working for ${durationText}</div>
                     </div>
                 </div>
             `;
@@ -1067,7 +1080,29 @@ class JarvisDashboard {
         }
 
         // Priority 2: Check for active tasks from task list
-        const activeTasks = this.tasks.filter(t => t.status === 'active');
+        // Filter out stale tasks (older than 4 hours)
+        const fourHoursAgo = new Date(Date.now() - 4 * 60 * 60 * 1000);
+        const activeTasks = this.tasks.filter(t => {
+            if (t.status !== 'active') return false;
+            const taskDate = t.startedAt ? new Date(t.startedAt) : new Date(t.created);
+            return taskDate > fourHoursAgo; // Only show recent active tasks
+        });
+        
+        // Auto-complete stale tasks
+        const staleTasks = this.tasks.filter(t => {
+            if (t.status !== 'active') return false;
+            const taskDate = t.startedAt ? new Date(t.startedAt) : new Date(t.created);
+            return taskDate <= fourHoursAgo;
+        });
+        
+        if (staleTasks.length > 0) {
+            staleTasks.forEach(t => {
+                t.status = 'completed';
+                t.completed = new Date().toISOString();
+                this.addLogEntry(`Auto-completed stale task: ${t.name}`, 'system');
+            });
+            this.saveData();
+        }
         
         if (activeTasks.length === 0) {
             container.innerHTML = `
@@ -1088,6 +1123,7 @@ class JarvisDashboard {
         const progress = task.progress || 0;
         const startedTime = task.startedAt ? new Date(task.startedAt) : new Date(task.created);
         const duration = Math.floor((new Date() - startedTime) / 60000); // minutes
+        const durationText = this.formatDuration(duration);
 
         container.innerHTML = `
             <div class="working-item active">
@@ -1101,10 +1137,25 @@ class JarvisDashboard {
                         </div>
                         <span class="progress-text">${progress}% complete</span>
                     </div>
-                    <div class="working-started">Working for ${duration} minute${duration !== 1 ? 's' : ''}</div>
+                    <div class="working-started">Working for ${durationText}</div>
                 </div>
             </div>
         `;
+    }
+
+    // Helper: Format duration nicely
+    formatDuration(minutes) {
+        if (minutes < 1) return 'Just started';
+        if (minutes < 60) return `${minutes}m`;
+        if (minutes < 1440) { // Less than 24 hours
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+        }
+        // Days
+        const days = Math.floor(minutes / 1440);
+        const hours = Math.floor((minutes % 1440) / 60);
+        return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
     }
 
     renderJustCompleted() {

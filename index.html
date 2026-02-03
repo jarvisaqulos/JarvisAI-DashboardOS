@@ -165,7 +165,10 @@
                 <div class="panel working-now-panel">
                     <div class="panel-header">
                         <h2>⏳ Currently Working On</h2>
-                        <span class="live-indicator">LIVE</span>
+                        <div>
+                            <button class="btn-small" onclick="dashboard.clearAllTasks()" title="Clear all tasks">Clear All</button>
+                            <span class="live-indicator">LIVE</span>
+                        </div>
                     </div>
                     <div class="panel-content">
                         <div id="currentlyWorkingOn" class="working-now-display">
