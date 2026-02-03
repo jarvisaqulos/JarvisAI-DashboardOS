@@ -705,6 +705,35 @@ class JarvisDashboard {
         this.setWorking(status === 'active');
     }
 
+    // Set what we're currently working on (for live tracking)
+    setCurrentWork(title, description = '', progress = 0) {
+        this.currentWork = {
+            title,
+            description,
+            progress,
+            startedAt: new Date().toISOString()
+        };
+        this.setStatus('active');
+        this.renderCurrentlyWorkingOn();
+        this.addLogEntry(`Started: ${title}`, 'task');
+    }
+
+    updateCurrentWorkProgress(progress) {
+        if (this.currentWork) {
+            this.currentWork.progress = progress;
+            this.renderCurrentlyWorkingOn();
+        }
+    }
+
+    completeCurrentWork() {
+        if (this.currentWork) {
+            this.addLogEntry(`Completed: ${this.currentWork.title}`, 'task');
+            this.currentWork = null;
+            this.setStatus('idle');
+            this.renderCurrentlyWorkingOn();
+        }
+    }
+
     updateStatusUI() {
         const indicator = document.getElementById('statusIndicator');
         const text = document.getElementById('statusText');
@@ -963,16 +992,81 @@ class JarvisDashboard {
 
     renderSimplifiedOverview() {
         this.renderCurrentlyWorkingOn();
+        this.renderOverviewActivity();
         this.renderJustCompleted();
         this.renderNextUp();
         this.renderActiveProjectsSummary();
+    }
+
+    renderOverviewActivity() {
+        const container = document.getElementById('overviewActivityLog');
+        if (!container) return;
+
+        // Show last 10 work log entries
+        const recentActivity = this.workLog.slice(0, 10);
+
+        if (recentActivity.length === 0) {
+            container.innerHTML = '<div class="empty-state">No recent activity</div>';
+            return;
+        }
+
+        container.innerHTML = recentActivity.map(entry => {
+            const time = new Date(entry.timestamp).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const iconMap = {
+                'system': '⚙️',
+                'task': '✓',
+                'email': '✉️',
+                'project': '📁',
+                'resource': '🔗',
+                'moltbook': '🤖',
+                'general': '◉'
+            };
+            
+            return `
+                <div class="activity-item-compact ${entry.type}">
+                    <span class="activity-time">${time}</span>
+                    <span class="activity-icon">${iconMap[entry.type] || '◉'}</span>
+                    <span class="activity-text">${this.escapeHtml(entry.text)}</span>
+                    <span class="activity-tag">${entry.type}</span>
+                </div>
+            `;
+        }).join('');
     }
 
     renderCurrentlyWorkingOn() {
         const container = document.getElementById('currentlyWorkingOn');
         if (!container) return;
 
-        // Get active tasks
+        // Priority 1: Check for live current work (real-time tracking)
+        if (this.currentWork) {
+            const progress = this.currentWork.progress || 0;
+            const startedTime = new Date(this.currentWork.startedAt);
+            const duration = Math.floor((new Date() - startedTime) / 60000); // minutes
+
+            container.innerHTML = `
+                <div class="working-item active">
+                    <div class="working-icon">⚡</div>
+                    <div class="working-content">
+                        <div class="working-title">${this.escapeHtml(this.currentWork.title)}</div>
+                        <div class="working-meta">${this.currentWork.description ? this.escapeHtml(this.currentWork.description) : 'In progress...'}</div>
+                        <div class="working-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <span class="progress-text">${progress}% complete</span>
+                        </div>
+                        <div class="working-started">Working for ${duration} minute${duration !== 1 ? 's' : ''}</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Priority 2: Check for active tasks from task list
         const activeTasks = this.tasks.filter(t => t.status === 'active');
         
         if (activeTasks.length === 0) {

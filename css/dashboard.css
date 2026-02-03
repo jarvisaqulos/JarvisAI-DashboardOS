@@ -2755,3 +2755,82 @@ body {
     color: var(--text-secondary);
     font-family: var(--font-mono);
 }
+
+/* Activity Panel for Overview */
+.activity-panel {
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+.activity-item-compact:last-child {
+    border-bottom: none;
+}
+
+.activity-item-compact:hover {
+    background: var(--bg-hover);
+}
+
+.activity-item-compact .activity-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    min-width: 50px;
+}
+
+.activity-item-compact .activity-icon {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+}
+
+.activity-item-compact .activity-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-item-compact .activity-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.activity-item-compact.system .activity-tag {
+    background: rgba(33, 150, 243, 0.15);
+    color: var(--accent-blue);
+}
+
+.activity-item-compact.task .activity-tag {
+    background: rgba(0, 210, 106, 0.15);
+    color: var(--accent-green);
+}
+
+.activity-item-compact.email .activity-tag {
+    background: rgba(156, 39, 176, 0.15);
+    color: var(--accent-purple);
+}
+
+.activity-item-compact.project .activity-tag {
+    background: rgba(255, 193, 7, 0.15);
+    color: var(--accent-yellow);
+}
